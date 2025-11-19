@@ -1,0 +1,19 @@
+<div id="media-container" class="media-container">
+    @if(media && media.mediaType === 'image') {
+        <button *ngIf="closeButton"
+                class="button button--md button--icon media-container__button"
+                id="close-button"
+                (click)="close($event)"
+        >
+            <div class="button__icon icon">
+                <app-svg-icon icon="icon-close"></app-svg-icon>
+            </div>
+        </button>
+        <img [src]="media.url" [alt]="media.url" class="media">
+    }
+    @if(media && media.mediaType === 'video') {
+        <video [id]="'media' + media.url" class="media" controls autoplay preload="auto">
+            <source [src]="media.url" [type]="media.type" />
+        </video>
+    }
+</div>

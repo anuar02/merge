@@ -1,0 +1,248 @@
+<div class="grid grid--group-wrap">
+    <div class="tile tile--lg">
+        <div class="tile__title">
+            {{ 'common.generalInfo' | transloco }}
+        </div>
+        <div class="tile__body">
+            <div class="grid grid--group-details">
+            <div class="list list--group-info">
+                <div class="list__item">
+                    <div class="list__label">
+                        ID
+                    </div>
+                    <div class="list__data">
+                       {{ profile().groupId }}
+                    </div>
+                </div>
+                <div class="list__item">
+                    <div class="list__label">
+                        Username
+                    </div>
+                    <div class="list__data">
+                        {{ profile().username }}
+                    </div>
+                </div>
+                <div class="list__item">
+                    <div class="list__label">
+                        {{ 'common.title' | transloco }}
+                    </div>
+                    <div class="list__data">
+                        {{ profile().title }}
+                    </div>
+                </div>
+                <div class="list__item">
+                    <div class="list__label">
+                        {{ 'accounts.profileLink' | transloco }}
+                    </div>
+                    <div class="list__data">
+                        <a [href]="profile().url" class="link" target="_blank">
+                            {{ profile().url }}
+                            <div class="link__icon icon">
+                                <app-svg-icon icon="icon-up-right"/>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+                <div class="list__item">
+                    <div class="list__label">
+                        {{ 'accounts.privacy' | transloco }}
+                    </div>
+                    <div class="list__data">
+                        <div class="badge badge--sm" [ngClass]="{
+                            'badge--success': !profile().privacy,
+                            'badge--error': profile().privacy
+                        }">
+                            {{ !profile().privacy ? ('accounts.open' | transloco) : ('accounts.closed' | transloco) }}
+                        </div>
+                    </div>
+                </div>
+                <div class="list__item">
+                    <div class="list__label">
+                        {{ 'accounts.verificationStatus' | transloco }}
+                    </div>
+                    <div class="list__data">
+                        <div class="badge badge--sm"
+                            [ngClass]="{
+                                'badge--success-icon': profile().verified,
+                            }"
+                        >
+                            <div class="badge__icon icon">
+                                <app-svg-icon [icon]="profile().verified ? 'icon-check' : 'icon-close'"/>
+                            </div>
+                            {{ profile().verified ? ('accounts.verified' | transloco) : ('accounts.notVerified' | transloco) }}
+                        </div>
+                    </div>
+                </div>
+                <div class="list__item">
+                    <div class="list__label">
+                        {{ 'accounts.postsCount' | transloco }}
+                    </div>
+                    <div class="list__data">
+                        {{ profile().postCount }}
+                    </div>
+                </div>
+                <div class="list__item">
+                    <div class="list__label">
+                        {{ 'accounts.subscribersCount' | transloco }}
+                    </div>
+                    <div class="list__data">
+                        {{ profile().subscriberCount }}
+                    </div>
+                </div>
+                <div class="list__item">
+                    <div class="list__label">
+                        {{ 'accounts.groupType' | transloco }}
+                    </div>
+                    <div class="list__data">
+                        {{ profile().groupType }}
+                    </div>
+                </div>
+                <div class="list__item">
+                    <div class="list__label">
+                        {{ 'accounts.addedToSystem' | transloco }}
+                    </div>
+                    <div class="list__data">
+                        {{ profile().createdAt | date: 'dd.MM.yyyy HH:mm:ss' }}
+                    </div>
+                </div>
+                <div class="list__item">
+                    <div class="list__label">
+                        {{ 'accounts.lastCollection' | transloco }}
+                    </div>
+                    <div class="list__data">
+                        {{ profile().lastCollection | date: 'dd.MM.yyyy HH:mm:ss' }}
+                    </div>
+                </div>
+                <div class="list__item">
+                    <div class="list__label">
+                        {{ 'accounts.inviteLink' | transloco }}
+                    </div>
+                    <div class="list__data" [innerHtml]="profile().domains | findLink"></div>
+                </div>
+            </div>
+            <div class="group group--vertical group--4xl">
+                <div class="panel">
+                    <div class="panel__content">
+                        <div class="group group--vertical group--md">
+                            <div class="text text--sm text--500">
+                                {{ 'common.tags' | transloco }}
+                            </div>
+                            <div class="group group--sm">
+                                @for (tag of tags(); track $index) {
+                                    <app-badge
+                                        [label]="tag"
+                                    ></app-badge>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                    <div class="panel__aside">
+<!--                        <button class="button button&#45;&#45;secondary-gray" (click)="toggleModalEditTags()">-->
+<!--                            <app-svg-icon icon="icon-pencil"/>-->
+<!--                        </button>-->
+                    </div>
+                </div>
+                <div class="grid grid--group-description">
+                    <div class="grid__title">
+                        <div class="text text--sm text--500">
+                        {{ 'common.description' | transloco }}
+                        </div>
+                    </div>
+                    <div class="grid__content">
+                        {{ profile().description }}
+                    </div>
+                </div>
+            </div>
+            </div>
+        </div>
+    </div>
+<!--    <div class="tile tile&#45;&#45;lg">-->
+<!--        <div class="tile__title">-->
+<!--            {{ 'common.notes' | transloco }}-->
+<!--        </div>-->
+<!--        <div class="tile__body">-->
+<!--            <div class="tile__toolbar">-->
+<!--                <div class="panel panel&#45;&#45;add-note">-->
+<!--                    <div class="panel__content">-->
+<!--                        <app-form-calendar-->
+<!--                            [formControl]="date"-->
+<!--                            [altFormat]="'d.m.Y'"-->
+<!--                            [dateFormat]="'d.m.Y'"-->
+<!--                            [hasClear]="true"-->
+<!--                            [icon]="'icon-calendar'"-->
+<!--                            [mode]="'range'"-->
+<!--                            [placeholder]="''">-->
+<!--                        </app-form-calendar>-->
+<!--                    </div>-->
+<!--                    <div class="panel__aside">-->
+<!--                        <button class="button">-->
+<!--                            <div class="button__icon icon">-->
+<!--                                <app-svg-icon icon="icon-plus"/>-->
+<!--                            </div>-->
+<!--                            <div class="button__name">-->
+<!--                                {{ 'common.addNote' | transloco }}-->
+<!--                            </div>-->
+<!--                        </button>-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--&lt;!&ndash;            <div class="card card&#45;&#45;xl">&ndash;&gt;-->
+<!--&lt;!&ndash;                <div class="card__details">&ndash;&gt;-->
+<!--&lt;!&ndash;                    <div class="card__title">&ndash;&gt;-->
+<!--&lt;!&ndash;                        <div class="card__name">&ndash;&gt;-->
+<!--&lt;!&ndash;                            Деструктив группа&ndash;&gt;-->
+<!--&lt;!&ndash;                        </div>&ndash;&gt;-->
+<!--&lt;!&ndash;                        <span class="card__aside">&ndash;&gt;-->
+<!--&lt;!&ndash;                            <div class="card__aside-layout">&ndash;&gt;-->
+<!--&lt;!&ndash;                            <div class="card__aside-icon icon">&ndash;&gt;-->
+<!--&lt;!&ndash;                                <app-svg-icon icon="icon-eye"/>&ndash;&gt;-->
+<!--&lt;!&ndash;                            </div>&ndash;&gt;-->
+<!--&lt;!&ndash;                            <div class="text text&#45;&#45;quaternary">&ndash;&gt;-->
+<!--&lt;!&ndash;                                Видно всем&ndash;&gt;-->
+<!--&lt;!&ndash;                            </div>&ndash;&gt;-->
+<!--&lt;!&ndash;                            </div>&ndash;&gt;-->
+<!--&lt;!&ndash;                        </span>&ndash;&gt;-->
+<!--&lt;!&ndash;                    </div>&ndash;&gt;-->
+<!--&lt;!&ndash;                    <div class="card__stats">&ndash;&gt;-->
+<!--&lt;!&ndash;                        Дата добавления: 24.12.2024&ndash;&gt;-->
+<!--&lt;!&ndash;                        <div class="card__aside">&ndash;&gt;-->
+<!--&lt;!&ndash;                            <div class="text text&#45;&#45;tetriary">&ndash;&gt;-->
+<!--&lt;!&ndash;                            29.01.2024 г.&ndash;&gt;-->
+<!--&lt;!&ndash;                            </div>&ndash;&gt;-->
+<!--&lt;!&ndash;                        </div>&ndash;&gt;-->
+<!--&lt;!&ndash;                    </div>&ndash;&gt;-->
+<!--&lt;!&ndash;                </div>&ndash;&gt;-->
+<!--&lt;!&ndash;            </div>&ndash;&gt;-->
+<!--&lt;!&ndash;            <div class="spacing spacing&#45;&#45;lg"></div>&ndash;&gt;-->
+<!--&lt;!&ndash;            <div class="card card&#45;&#45;xl">&ndash;&gt;-->
+<!--&lt;!&ndash;                <div class="card__details">&ndash;&gt;-->
+<!--&lt;!&ndash;                    <div class="card__title">&ndash;&gt;-->
+<!--&lt;!&ndash;                        <div class="card__name">&ndash;&gt;-->
+<!--&lt;!&ndash;                            Создатель из Астаны&ndash;&gt;-->
+<!--&lt;!&ndash;                        </div>&ndash;&gt;-->
+<!--&lt;!&ndash;                        <span class="card__aside">&ndash;&gt;-->
+<!--&lt;!&ndash;                            <div class="card__aside-layout">&ndash;&gt;-->
+<!--&lt;!&ndash;                                <div class="card__aside-icon icon">&ndash;&gt;-->
+<!--&lt;!&ndash;                                    <app-svg-icon icon="icon-eye"/>&ndash;&gt;-->
+<!--&lt;!&ndash;                                </div>&ndash;&gt;-->
+<!--&lt;!&ndash;                                <div class="text text&#45;&#45;quaternary">&ndash;&gt;-->
+<!--&lt;!&ndash;                                    Видно всем&ndash;&gt;-->
+<!--&lt;!&ndash;                                </div>&ndash;&gt;-->
+<!--&lt;!&ndash;                            </div>&ndash;&gt;-->
+<!--&lt;!&ndash;                        </span>&ndash;&gt;-->
+<!--&lt;!&ndash;                    </div>&ndash;&gt;-->
+<!--&lt;!&ndash;                    <div class="card__stats">&ndash;&gt;-->
+<!--&lt;!&ndash;                        Дата добавления: 24.12.2024&ndash;&gt;-->
+<!--&lt;!&ndash;                        <div class="card__aside">&ndash;&gt;-->
+<!--&lt;!&ndash;                            <div class="card__aside-details">&ndash;&gt;-->
+<!--&lt;!&ndash;                                <div class="text text&#45;&#45;tetriary">&ndash;&gt;-->
+<!--&lt;!&ndash;                                    12.12.2023 г. (Посл. редактирование: 24.12.2023 г.).&ndash;&gt;-->
+<!--&lt;!&ndash;                                </div>&ndash;&gt;-->
+<!--&lt;!&ndash;                            </div>&ndash;&gt;-->
+<!--&lt;!&ndash;                        </div>&ndash;&gt;-->
+<!--&lt;!&ndash;                    </div>&ndash;&gt;-->
+<!--&lt;!&ndash;                </div>&ndash;&gt;-->
+<!--&lt;!&ndash;            </div>&ndash;&gt;-->
+<!--        </div>-->
+<!--    </div>-->
+</div>

@@ -1,0 +1,34 @@
+@use '../../../../../../../assets/scss/util/rem-mixin' as *;
+
+.qr-status-ok {
+  opacity: 0.2;
+}
+
+.qr-wrapper {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: rem(16px);
+  align-self: stretch;
+}
+
+.qr-code-image {
+  display: flex;
+  width: rem(195px);
+  height: rem(196px);
+  justify-content: center;
+  align-items: center;
+  gap: rem(10px);
+  border-radius: rem(12px);
+  background: var(--Colors-Background-bg-secondary, #F9FAFB);
+}
+
+.qr-center-icon {
+  position: absolute;
+  display: flex;
+  width: rem(48px);
+  height: rem(48px);
+  justify-content: center;
+  align-items: center;
+}

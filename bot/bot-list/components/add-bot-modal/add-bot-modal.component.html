@@ -1,0 +1,199 @@
+<app-modal-wrap
+    [modalTitle]="'bots.createTelegramBot' | transloco"
+    [size]="'trap'"
+    (closeModal)="closeBtn()"
+>
+    <div modal-body>
+        <app-stepper linear>
+            <app-step [label]="'bots.botConfig' | transloco" [stepControl]="firstStepForm">
+                <div class="group group--auto-layout">
+                    <div class="group__item">
+                        <div class="input">
+                            <div class="input__label">
+                                {{ 'bots.botNameInModal' | transloco}} <mark>*</mark>
+                            </div>
+                            <div
+                                class="input__container"
+                                [class.input__container--error]="name.invalid && name.touched"
+                            >
+                                <input
+                                    type="text"
+                                    class="input__control"
+                                    [placeholder]="'bots.botNamePlaceholder' | transloco"
+                                    [formControl]="name"
+                                >
+                            </div>
+                        </div>
+                    </div>
+                    <!-- <div class="group__item">
+                        <div class="input">
+                            <div class="input__label">
+                                {{ 'common.phoneNumber' | transloco }} <mark>*</mark>
+                            </div>
+                            <div
+                                class="input__container"
+                                [class.input__container--error]="phone.invalid && phone.touched"
+                            >
+                                <input
+                                    type="text"
+                                    class="input__control"
+                                    [placeholder]="'bots.phoneNumberPlaceholder' | transloco"
+                                    [formControl]="phone"
+                                >
+                            </div>
+                        </div>
+                    </div> -->
+                </div>
+
+                <div class="spacing spacing--xl"></div>
+
+                <div class="textarea">
+                    <div class="textarea__label">{{ 'common.note' | transloco }}</div>
+                    <textarea
+                        class="textarea__input"
+                        [formControl]="description"
+                    >
+                    </textarea>
+                </div>
+
+                <div class="spacing spacing--4xl"></div>
+            </app-step>
+
+            <app-step [label]="'bots.activation' | transloco" [stepControl]="secondStepForm">
+                @if (mode() === 'phoneNumber') {
+                    <div class="input">
+                        <div class="input__label">
+                            {{ 'common.phoneNumber' | transloco }} <mark>*</mark>
+                        </div>
+                        <div
+                            class="input__container"
+                            [class.input__container--error]="phone.invalid && phone.touched"
+                        >
+                            <input
+                                type="text"
+                                class="input__control"
+                                [placeholder]="'bots.phoneNumberPlaceholder' | transloco"
+                                [formControl]="phone"
+                            >
+                        </div>
+                    </div>
+
+                    <div class="spacing spacing--xl"></div>
+
+                    @if (isSmsCodeInfoVisible) {
+                        <div class="note note--primary note--info">
+                            <div class="note__icon icon">
+                                <app-svg-icon icon="icon-info-circle"></app-svg-icon>
+                            </div>
+                            {{ 'bots.smsCodeInfo' | transloco }}
+                        </div>
+                        <div class="spacing spacing--md"></div>
+
+                        @if (stepper().selectedIndex === 1) {
+                            <app-otp-input
+                                [label]="'bots.smsCode' | transloco"
+                                [formControl]="code"
+                                [isError]="isOtpError"
+                                [size]="5"
+                                (codeRefreshActivated)="handleCodeRefresh()"
+                            >
+                            </app-otp-input>
+                        }
+
+                        <div class="spacing spacing--xl"></div>
+
+                        <div class="input">
+                            <div class="input__label">
+                                {{ 'bots.authCode' | transloco }}:
+                            </div>
+                            <div
+                                class="input__container"
+                                [class.input__container--error]="twoFactorPassword.invalid && twoFactorPassword.touched"
+                            >
+                                <input
+                                    type="text"
+                                    class="input__control"
+                                    [placeholder]="'bots.codePlaceholder' | transloco"
+                                    [formControl]="twoFactorPassword"
+                                >
+                            </div>
+                        </div>
+
+                        <div class="spacing spacing--2xl"></div>
+                    }
+
+                    <div class="group group--vertical group--2xl">
+                        <button class="button button--link-color" (click)="changeMode('qr')">
+                            <div class="button__name">{{ 'bots.loginByQr' | transloco }}</div>
+                        </button>
+                    </div>
+                    <div class="spacing spacing--4xl"></div>
+                }
+
+                @if (mode() === 'qr') {
+                    <div class="group group--vertical group--middle">
+                        @if (!imagePath) {
+                            <app-loader></app-loader>
+                        } @else {
+                            <div class="qr-wrapper">
+                                <img [src]="imagePath" alt="QR" class="qr-code-image" [class.qr-status-ok]="isQrCorrect()"/>
+
+                                @if (isQrCorrect()) {
+                                    <div class="qr-center-icon">
+                                        <img src="assets/img/check-circle.png" alt="">
+                                    </div>
+                                }
+                            </div>
+
+                            @if (!isQrCorrect()) {
+                                <div class="text text--400 text--tetriary">{{ 'bots.scanQr' | transloco }}</div>
+                                <div class="spacing spacing--xs"></div>
+                            }
+                        }
+
+                        @if (twoFactorAuth()) {
+                            <div class="input">
+                                <div class="input__label">
+                                    {{ 'bots.authCode' | transloco }}:
+                                </div>
+                                <div
+                                    class="input__container"
+                                    [class.input__container--error]="twoFactorPassword.invalid && twoFactorPassword.touched"
+                                >
+                                    <input
+                                        type="text"
+                                        class="input__control"
+                                        [placeholder]="'bots.codePlaceholder' | transloco"
+                                        [formControl]="twoFactorPassword"
+                                    >
+                                </div>
+                            </div>
+                            <div class="spacing spacing--xs"></div>
+                        }
+
+                        <button class="button button--link-color" (click)="changeMode('phoneNumber')">
+                            <div class="button__name">{{ 'bots.loginByPhoneNumber' | transloco }}</div>
+                        </button>
+                        <div class="spacing spacing--4xl"></div>
+                    </div>
+                }
+            </app-step>
+        </app-stepper>
+    </div>
+    <div modal-footer>
+        <div class="panel">
+            <div class="panel__aside">
+                @if (isBackBtnVisible) {
+                    <button class="button button--lg button--expand button--secondary-gray" (click)="back()">
+                        <div class="button__name">{{ 'button.back' | transloco }}</div>
+                    </button>
+                }
+                @if (isNextBtnVisible) {
+                    <button class="button button--lg button--expand" (click)="next()">
+                        <div class="button__name">{{ nextBtnName | transloco }}</div>
+                    </button>
+                }
+            </div>
+        </div>
+    </div>
+</app-modal-wrap>

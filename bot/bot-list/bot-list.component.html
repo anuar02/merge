@@ -1,0 +1,96 @@
+<div class="body__container container">
+    <!-- <div class="body__sidebar">
+        <div class="sidebar">
+            <div class="sidebar__section sidebar__section--expand">
+            </div>
+        </div>
+    </div> -->
+    
+    <div class="body__content">
+        <div class="tile" [class.tile--table]="dataViewType === 'table'">
+            <div class="tile__topbar">
+                <div class="text text--lg text--700">
+                    {{ 'bots.bots' | transloco }}: {{ (pageInfo$ | async)?.totalElements ?? 0 }}
+                </div>
+                <div class="panel panel--md">
+                    <div class="panel__content">
+                        <!-- <button class="button button--secondary-gray" (click)="onSelectAll()">
+                            <div class="checkbox">
+                                <input class="checkbox__control" type="checkbox" id="selectAll"
+                                    [checked]="data.length && selectedRows().length === data.length">
+                            </div>
+                        </button> -->
+
+                        <app-view-switch (changed)="onViewChange($event)"></app-view-switch>
+
+                        <app-search-bar [value]="searchedText" (searched)="handleSearch($event)"></app-search-bar>
+                    </div>
+                    <div class="panel__aside">
+                        <button class="button" (click)="openBotModal()">
+                            <div class="button__icon icon">
+                                <app-svg-icon [icon]="'icon-plus'"></app-svg-icon>
+                            </div>
+                            <div class="button__name">{{ 'bots.addBot' | transloco }}</div>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="tile__body">
+                @if (isLoading()) {
+                    <app-loader></app-loader>
+                }
+
+                @if (((isLoaded() || isLoading()) === false) && data.length === 0) {
+                    <app-not-found></app-not-found>
+                }
+
+                @if (dataViewType === 'list') {
+                    @if (isLoaded() && data.length > 0) {
+                        <div class="group group--xl group--vertical">
+                            @for (item of data; track item.id; let i = $index) {
+                                <app-bot-card
+                                    [actions]="dropdownItems"
+                                    [data]="item"
+                                    [platforms]="allowedPlatforms()"
+                                    (clicked)="goToBotDetails(item.id)"
+                                    (sessionsClicked)="openSessionsDrawer($event)"
+                                >
+                                </app-bot-card>
+                            }
+                        </div>
+                    }
+                }
+                
+                @if (dataViewType === 'table') {
+                    @if (isLoaded() && data.length > 0) {
+                        <app-table
+                            [class]="'table--common'"
+                            [columns]="columns"
+                            [data]="data"
+                            [selectedRows]="selectedRowsIds()"
+                            [checkbox]="false"
+                            (rowSelected)="onSelectRow($event)"
+                            (allSelected)="onSelectAll()"
+                            (rowClicked)="onBotSelect($event)">
+                        </app-table>
+                    }
+                }
+            </div>
+
+            @if (isLoaded() && data.length !== 0) {
+                <div class="tile__pagination">
+                    <app-pagination-panel
+                        [selectPanelPosition]="'up'"
+                        [totalElements]="(pageInfo$ | async)?.totalElements"
+                        [totalPages]="(pageInfo$ | async)?.totalPages"
+                        [pageParams]="(pageInfo$ | async)?.pageParams"
+                        (itemsPerPageChanged)="handleChangeItemsPerPage($event)"
+                        (pageChanged)="handleChangePage($event)">
+                    </app-pagination-panel>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<app-sessions-drawer [(active)]="isSessionsDrawerActive" [botId]="botId"></app-sessions-drawer>

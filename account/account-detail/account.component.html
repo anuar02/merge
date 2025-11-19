@@ -1,0 +1,19 @@
+<div class="body__container container">
+
+    <div class="body__wrapper">
+        <div class="grid grid--group">
+            <div class="grid__header">
+                    <app-account-table-card
+                        class="card--light"
+                        [platforms]="allowedPlatforms()"
+                        [account]="generalInfo()"
+                        [bindingList]="bindingList"
+                        (monitoringCreated)="enableMonitoring(generalInfo().id)"
+                        (monitoringDisabled)="disableMonitoring(generalInfo().id)"
+                    ></app-account-table-card>
+            </div>
+
+            <app-tabs [tabs]="tabs" [useRoutes]="true"></app-tabs>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,173 @@
+<div class="card">
+    <!-- Checkbox -->
+    <app-checkbox
+        *ngIf="checkbox"
+        [index]="index"
+        [class]="'card__checkbox'"
+        [hasMouseOverEvent]="checkbox"
+        [display]="selectedRows.includes(index) ? 'block' : 'none'"
+        [value]="selectedRows.includes(index)"
+        (checked)="onSelectRowHandler(index)"
+        (click)="$event.stopPropagation()"
+    ></app-checkbox>
+
+    <!-- Avatar -->
+    <div class="card__avatar" style="width: 2.5rem;">
+        <div class="avatar avatar--group">
+            <div class="avatar__wrapper">
+                <img
+                    [class.avatar__image--loaded]="data.photo !== 'assets/img/misc/person-avatar.png'"
+                    [src]="data.photo"
+                    alt="Avatar"
+                    class="avatar__image"
+                >
+                <app-platform-icon
+                    [platform]="platformId()"
+                    [platformList]="platforms()"
+                ></app-platform-icon>
+            </div>
+        </div>
+    </div>
+
+    <!-- Details -->
+    <div class="card__details">
+        <!-- Badges -->
+        <div class="group">
+            @if (data.monitor) {
+                <app-badge
+                    [color]="'success'"
+                    [label]="'accounts.onMonitoring' | transloco"
+                    [prefixIcon]="'icon-eye'"
+                    [capitalize]="false"
+                ></app-badge>
+            }
+            @if (data.collectStatus) {
+                <app-badge
+                    *ngIf="collectStatus()"
+                    [color]="collectStatus().color"
+                    [label]="collectStatus().label | transloco"
+                    [capitalize]="false"
+                ></app-badge>
+            }
+        </div>
+
+        <!-- Title/Name -->
+        <div class="card__title">
+            <div class="group group--vertical group--md">
+                <!-- Title -->
+                <div *ngIf="data.title" class="card__name"
+                     [innerHtml]="data.title | searchHighlighter: searchedText">
+                </div>
+
+                <!-- Username -->
+                <ng-container *ngIf="data.username">
+                    <div class="card__name"
+                         [innerHtml]="'@' + data.username | searchHighlighter: searchedText">
+                    </div>
+                </ng-container>
+
+                <!-- Account ID -->
+                <ng-container *ngIf="data.accountId">
+                    <div class="card__name">
+                        {{ 'ID:' + data.accountId }}
+                    </div>
+                </ng-container>
+
+                <!-- URL -->
+                <ng-container *ngIf="data.url">
+                    <div class="card__name">
+                        <a [href]="data.url" class="link" target="_blank"
+                           (click)="$event.stopPropagation()">
+                            {{ data.url }}
+                            <div class="link__icon icon">
+                                <app-svg-icon icon="icon-up-right"/>
+                            </div>
+                        </a>
+                    </div>
+                </ng-container>
+
+                <!-- Fallback to search value -->
+                @if (!data.title && !data.url && !data.username) {
+                    <div class="card__name">
+                        @switch (data.searchParamType) {
+                            @case ('SCREEN_NAME') {
+                                <span [innerHtml]="'@' + data.searchValue | searchHighlighter: searchedText"></span>
+                            }
+                            @case ('ID') {
+                                <span [innerHtml]="'ID: ' + data.searchValue | searchHighlighter: searchedText"></span>
+                            }
+                            @case ('URL') {
+                                <a [href]="data.searchValue" class="link" target="_blank"
+                                   (click)="$event.stopPropagation()">
+                                    <span [innerHtml]="data.searchValue | searchHighlighter: searchedText"></span>
+                                    <div class="link__icon icon">
+                                        <app-svg-icon icon="icon-up-right"/>
+                                    </div>
+                                </a>
+                            }
+                        }
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <!-- Aside/Actions -->
+    <div class="card__aside card__aside--vertical">
+        <div class="card__aside-layout m-b">
+            <!-- Metrics -->
+            <div class="badge badge--xl badge--white" style="gap: 0.5rem">
+                {{ 'accounts.groupCount' | transloco }}
+                @if (typeof data.groupCount === 'number') {
+                    <div class="count text--400">{{ data.groupCount }}</div>
+                }
+            </div>
+
+            <div class="badge badge--xl badge--white" style="gap: 0.5rem">
+                {{ 'accounts.publicationsCount' | transloco }}
+                @if (typeof data.postCount === 'number') {
+                    <div class="count text--400">{{ data.postCount }}</div>
+                }
+            </div>
+
+            <!-- Monitoring Button -->
+            @if (shouldShowMonitoringButton()) {
+                <button
+                    class="button button--secondary-gray"
+                    [class.button--allert]="data.monitor"
+                    (click)="$event.stopPropagation(); data.monitor ? monitoringDisabled.emit() : monitoringCreated.emit()"
+                >
+                    <div class="button__icon icon">
+                        <app-svg-icon
+                            [icon]="data.monitor ? 'icon-eye-off' : 'icon-eye'"
+                        ></app-svg-icon>
+                    </div>
+                    <div class="button__name">
+                        {{ data.monitor ? ('accounts.end' | transloco) : ('accounts.monitoring' | transloco) }}
+                    </div>
+                </button>
+            }
+
+            <!-- Actions Dropdown -->
+            <app-actions-dropdown
+                [items]="dropdownItems"
+                (click)="$event.stopPropagation()"
+                (actionClicked)="onActionClick($event)"
+            ></app-actions-dropdown>
+        </div>
+
+        <!-- Last Collection Date -->
+        <div class="card__aside-bottom">
+            @if (data.lastCollectedAt) {
+                <div class="group group--vertical group--xs">
+                    <div class="text text--tetriary text-400">
+                        {{ 'accounts.lastCollectionDate' | transloco }}
+                    </div>
+                    <div class="text">
+                        {{ data.lastCollectedAt | date: 'dd.MM.yyyy HH:mm:ss' }}
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>

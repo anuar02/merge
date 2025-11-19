@@ -1,0 +1,58 @@
+<app-base-pageable-list
+    [isLoading]="isLoading()"
+    [data]="groups()"
+    [totalElements]="pageInfo().totalElements"
+    [totalPages]="pageInfo().totalPages"
+    [pageParams]="pageInfo().pageParams"
+    [queryParams]="queryParams()"
+    [sortingItems]="sortingItems"
+    (searchHandled)="handleSearch($event)"
+    (sortingHandled)="onSortingChange($event)"
+    (updated)="handleChangePageParams($event)"
+
+>
+    <ng-container ngProjectAs="filter">
+        <app-filter (applied)="handleFilter()"></app-filter>
+    </ng-container>
+
+    @if (isOnline) {
+    <ng-container ngProjectAs="actions">
+        <button class="button" (click)="openAddOpenGroupModal()">
+            <div class="button__icon icon">
+                <app-svg-icon [icon]="'icon-plus'"></app-svg-icon>
+            </div>
+            <div class="button__name">{{ 'button.add' | transloco }}</div>
+        </button>
+        <!-- <app-button-dropdown
+            [items]="createMethods"
+            [icon]="'icon-plus'"
+            [label]="'button.add' | transloco"
+        ></app-button-dropdown> -->
+    </ng-container>
+    }
+
+    @if (groupsMapped() && groupsMapped().length > 0) {
+    <ng-container ngProjectAs="table">
+        <app-table
+            [class]="'table--deanon-history'"
+            [columns]="columns"
+            [data]="groupsMapped()"
+            [dictionary]="allowedPlatforms()"
+            [searchedText]="filterForm.controls.search.value ?? ''"
+            [checkbox]="{ visible: false, main: false }"
+            (rowClicked)="goToGroupDetails($event.id)"
+        ></app-table>
+    </ng-container>
+    }
+    <ng-container ngProjectAs="list">
+        @for (group of groups(); track $index) {
+            <app-group-table-card
+                [group]="group"
+                [platforms]="allowedPlatforms()"
+                (monitoringCreated)="enableMonitoring(group.id)"
+                (monitoringDisabled)="disableMonitoring(group.id)"
+                (clicked)="goToGroupDetails(group.id)"
+            ></app-group-table-card>
+        }
+    </ng-container>
+</app-base-pageable-list>

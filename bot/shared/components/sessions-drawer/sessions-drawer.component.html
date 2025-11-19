@@ -1,0 +1,51 @@
+<div class="drawer drawer--matches" [class.drawer--active]="active">
+    <div class="drawer__header">
+        <div class="drawer__title">
+            {{ 'bots.sessions' | transloco }}
+        </div>
+        <div class="drawer__close">
+            <button class="button button--md button--icon" (click)="close()">
+                <div class="button__icon icon">
+                    <app-svg-icon icon="icon-close"></app-svg-icon>
+                </div>
+            </button>
+        </div>
+    </div>
+    @let isNotFound = (isLoaded() || isLoading() === false) && sessions().length === 0;
+    <div class="drawer__body" [style]="{'display': (isNotFound || isLoading()) ? 'unset' : 'flex'}">
+        @if (isLoading()) {
+            <app-loader></app-loader>
+        }
+
+        @if (isNotFound) {
+            <app-not-found></app-not-found>
+        }
+
+        @if (isLoaded() && sessions().length > 0) {
+            <div class="drawer__content">
+                <div class="drawer__outline-container">
+                    <div class="drawer__table">
+                        <app-table
+                            [class]="'table--matching'"
+                            [columns]="columns"
+                            [data]="sessions()"
+                            [checkbox]="false"
+                            [dictionary]="[]"
+                            [searchedText]="''">
+                        </app-table>
+                    </div>
+                    <div class="drawer__pagination">
+                        <app-pagination-panel
+                            [selectPanelPosition]="'up'"
+                            [totalElements]="pageInfo()?.totalElements"
+                            [totalPages]="pageInfo()?.totalPages"
+                            [pageParams]="pageInfo()?.pageParams"
+                            (itemsPerPageChanged)="handleChangeItemsPerPage($event)"
+                            (pageChanged)="handleChangePage($event)">
+                        </app-pagination-panel>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>

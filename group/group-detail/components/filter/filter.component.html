@@ -1,0 +1,452 @@
+<div class="tile" [formGroup]="filterForm">
+    <div class="tile__header">
+        <div class="tile__title">{{ 'common.filter' | transloco }}</div>
+        <div class="tile__toggle">
+            <button class="button button--secondary-gray button--sm">
+                <div class="button__icon icon">
+                    <app-svg-icon icon="icon-chevron-left"></app-svg-icon>
+                </div>
+            </button>
+        </div>
+    </div>
+    <div class="tile__body">
+        <div class="filter">
+            <div class="filter__body">
+                <div class="filter__section">
+                    <app-accordion [title]="'Деструктив'">
+                        <div class="group group--vertical group--12">
+                            <div class="panel">
+                                <div class="panel__content">
+                                    <div class="checkbox">
+                                        <input class="checkbox__control" type="checkbox" id="opt10" checked>
+                                        <label class="checkbox__label" for="opt10">
+                                            Девиантное
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="panel__aside">
+                                    <div class="text text--sm">
+                                        1,000,000
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="panel">
+                                <div class="panel__content">
+                                    <div class="checkbox">
+                                        <input class="checkbox__control" type="checkbox" id="opt11">
+                                        <label class="checkbox__label" for="opt11">
+                                            Криминал
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="panel__aside">
+                                    <div class="text text--sm">
+                                        1,000,000
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="panel">
+                                <div class="panel__content">
+                                    <div class="checkbox">
+                                        <input class="checkbox__control" type="checkbox" id="opt12">
+                                        <label class="checkbox__label" for="opt12">
+                                            Межнациональное
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="panel__aside">
+                                    <div class="text text--sm">
+                                        1,000,000
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="panel">
+                                <div class="panel__content">
+                                    <div class="checkbox">
+                                        <input class="checkbox__control" type="checkbox" id="opt13">
+                                        <label class="checkbox__label" for="opt13">
+                                            Порнография
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="panel__aside">
+                                    <div class="text text--sm">
+                                        1,000,000
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="panel">
+                                <div class="panel__content">
+                                    <div class="checkbox">
+                                        <input class="checkbox__control" type="checkbox" id="opt14">
+                                        <label class="checkbox__label" for="opt14">
+                                            ПолитЭкс
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="panel__aside">
+                                    <div class="text text--sm">
+                                        1,000,000
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="panel">
+                                <div class="panel__content">
+                                    <div class="checkbox">
+                                        <input class="checkbox__control" type="checkbox" id="opt15">
+                                        <label class="checkbox__label" for="opt15">
+                                        ЭксТер
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="panel__aside">
+                                    <div class="text text--sm">
+                                        1,000,000
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </app-accordion>
+                </div>
+                <div class="filter__section">
+                    <app-accordion [title]="'Вспомогательные источники'">
+                        <div class="group group--vertical group--12">
+                            <div class="text text--sm text--600">
+                                Социальные сети
+                            </div>
+                            <div class="panel">
+                                <div class="panel__content">
+                                    <div class="checkbox">
+                                    <input class="checkbox__control" type="checkbox" id="20">
+                                    <label class="checkbox__label" for="20">
+                                        Instagram
+                                    </label>
+                                    </div>
+                                </div>
+                                <div class="panel__aside">
+                                    <div class="text text--sm">
+                                    1,000,000
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="panel">
+                                <div class="panel__content">
+                                    <div class="checkbox">
+                                    <input class="checkbox__control" type="checkbox" id="21">
+                                    <label class="checkbox__label" for="21">
+                                        Facebook
+                                    </label>
+                                    </div>
+                                </div>
+                                <div class="panel__aside">
+                                    <div class="text text--sm">
+                                        1,000,000
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="panel">
+                                <div class="panel__content">
+                                    <div class="checkbox">
+                                    <input class="checkbox__control" type="checkbox" id="22">
+                                    <label class="checkbox__label" for="22">
+                                        Tik-Tok
+                                    </label>
+                                    </div>
+                                </div>
+                                <div class="panel__aside">
+                                    <div class="text text--sm">
+                                    1,000,000
+                                    </div>
+                                </div>
+                                </div>
+                                <div class="panel">
+                                <div class="panel__content">
+                                    <div class="checkbox">
+                                    <input class="checkbox__control" type="checkbox" id="23">
+                                    <label class="checkbox__label" for="23">
+                                        VK
+                                    </label>
+                                    </div>
+                                </div>
+                                <div class="panel__aside">
+                                    <div class="text text--sm">
+                                    1,000,000
+                                    </div>
+                                </div>
+                                </div>
+                                <div class="panel">
+                                <div class="panel__content">
+                                    <div class="checkbox">
+                                        <input class="checkbox__control" type="checkbox" id="24">
+                                        <label class="checkbox__label" for="24">
+                                            Snapchat
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="panel__aside">
+                                    <div class="text text--sm">
+                                    1,000,000
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="panel">
+                                <div class="panel__content">
+                                    <div class="checkbox">
+                                        <input class="checkbox__control" type="checkbox" id="25">
+                                        <label class="checkbox__label" for="25">
+                                            Twitter
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="panel__aside">
+                                    <div class="text text--sm">
+                                        1,000,000
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="group group--vertical group--12">
+                            <div class="text text--sm text--600">
+                                Мессенджеры
+                            </div>
+                            <div class="panel">
+                                <div class="panel__content">
+                                    <div class="checkbox">
+                                    <input class="checkbox__control" type="checkbox" id="30">
+                                    <label class="checkbox__label" for="30">
+                                        Telegram
+                                    </label>
+                                    </div>
+                                </div>
+                                <div class="panel__aside">
+                                    <div class="text text--sm">
+                                    1,000,000
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="panel">
+                                <div class="panel__content">
+                                    <div class="checkbox">
+                                    <input class="checkbox__control" type="checkbox" id="31">
+                                    <label class="checkbox__label" for="31">
+                                        WhatsApp
+                                    </label>
+                                    </div>
+                                </div>
+                                <div class="panel__aside">
+                                    <div class="text text--sm">
+                                    1,000,000
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </app-accordion>
+                </div>
+                <div class="filter__section">
+                    <div class="group group--vertical group--12">
+                        <div class="text text--sm text--600">
+                            Тональность
+                        </div>
+                        <div class="panel">
+                            <div class="panel__content">
+                                <div class="checkbox">
+                                    <input class="checkbox__control" type="checkbox" id="opt40">
+                                    <label class="checkbox__label" for="opt40">
+                                        Сдержанная
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="panel__aside">
+                                <div class="text text--sm">
+                                    1,000,000
+                                </div>
+                            </div>
+                        </div>
+                        <div class="panel">
+                            <div class="panel__content">
+                                <div class="checkbox">
+                                    <input class="checkbox__control" type="checkbox" id="opt41">
+                                    <label class="checkbox__label" for="opt41">
+                                    Умеренная
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="panel__aside">
+                                <div class="text text--sm">
+                                    1,000,000
+                                </div>
+                            </div>
+                        </div>
+                        <div class="panel">
+                            <div class="panel__content">
+                                <div class="checkbox">
+                                    <input class="checkbox__control" type="checkbox" id="opt42">
+                                    <label class="checkbox__label" for="opt42">
+                                    Агрессивная
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="panel__aside">
+                                <div class="text text--sm">
+                                    1,000,000
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="group group--vertical group--12">
+                        <div class="text text--sm text--600">
+                            На мониторинге
+                        </div>
+                        <div class="panel">
+                            <div class="panel__content">
+                                <div class="checkbox">
+                                    <input class="checkbox__control" type="checkbox" id="opt50">
+                                    <label class="checkbox__label" for="opt50">
+                                    Да
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="panel">
+                            <div class="panel__content">
+                                <div class="checkbox">
+                                    <input class="checkbox__control" type="checkbox" id="opt51">
+                                    <label class="checkbox__label" for="opt51">
+                                        Нет
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="group group--vertical group--12">
+                        <div class="text text--sm text--600">
+                            Кол-во аккаунтов
+                        </div>
+                        <div class="group group--sidebar-filter-accounts">
+                            <div class="group__item">
+                                <div class="input">
+                                    <div class="input__container">
+                                    <input class="input__control" placeholder="от 1">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="group__item">
+                                <div class="input">
+                                    <div class="input__container">
+                                    <input class="input__control" placeholder="до 50 320">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+            
+                        <div class="range-slider">
+                            <div class="range-slider__container">
+                                <span class="range-slider__track" id="range_track"></span>
+                                <input class="range-slider__thumb" type="range" min="0" max="100" value="0" step="0" id="range_min">
+                                <input class="range-slider__thumb" type="range" min="0" max="100" value="100" step="0" id="range_max">
+                            </div>
+                        </div>
+        
+                    </div>
+                    <div class="group group--vertical group--12">
+                        <div class="text text--sm text--600">
+                            Дата добавления в систему
+                        </div>
+                        <div class="input">
+                            <div class="input__container">
+                                <div class="input__icon icon">
+                                    <!-- <icon-calendar></icon-calendar> -->
+                                </div>
+                                <input class="input__control" type="text" value="29.11.2022 - 29.11.2024">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="group group--vertical group--12">
+                        <div class="text text--sm text--600">
+                            Кем сохранено
+                        </div>
+                        <div class="input">
+                            <div class="input__container">
+                                <input class="input__control" type="text" placeholder="Выбрать из списка">
+                                <div class="input__actions">
+                                    <div class="input__action icon">
+                                        <app-svg-icon icon="icon-menu"></app-svg-icon>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="group group--vertical group--12">
+                        <div class="text text--sm text--600">
+                            Кол-во публикаций
+                        </div>
+                        <div class="group group--sidebar-filter-accounts">
+                            <div class="group__item">
+                                <div class="input">
+                                    <div class="input__container">
+                                    <input class="input__control" placeholder="от 1">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="group__item">
+                                <div class="input">
+                                    <div class="input__container">
+                                        <input class="input__control" placeholder="до 2 345">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="range-slider">
+                            <div class="range-slider__container">
+                                <span class="range-slider__track" id="range_track"></span>
+                                <input class="range-slider__thumb" type="range" min="0" max="100" value="0" step="0" id="range_min">
+                                <input class="range-slider__thumb" type="range" min="0" max="100" value="100" step="0" id="range_max">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="group group--vertical group--12">
+                        <div class="text text--sm text--600">
+                            Тип
+                        </div>
+                        <div class="panel">
+                            <div class="panel__content">
+                                <div class="checkbox">
+                                    <input class="checkbox__control" type="checkbox" id="opt60">
+                                    <label class="checkbox__label" for="opt60">
+                                        Каналы
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="panel">
+                            <div class="panel__content">
+                                <div class="checkbox">
+                                    <input class="checkbox__control" type="checkbox" id="opt61">
+                                    <label class="checkbox__label" for="opt61">
+                                        Группы
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="spacing spacing--xl"></div>
+            </div>
+        </div>
+    </div>
+    <div class="tile__footer">
+        <div class="group group--auto-layout">
+            <button class="button button--secondary button--expand" (click)="reset()">
+                <div class="button__name">
+                    {{ 'button.reset' | transloco }}
+                </div>
+            </button>
+            <button class="button button--expand" (click)="apply()">
+                <div class="button__name">
+                    {{ 'button.apply' | transloco }}
+                </div>
+            </button>
+        </div>
+    </div>
+</div>
+  

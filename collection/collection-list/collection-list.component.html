@@ -1,0 +1,58 @@
+<app-base-pageable-list
+    [isLoading]="isLoading()"
+    [data]="collections()"
+    [totalElements]="pageInfo().totalElements"
+    [totalPages]="pageInfo().totalPages"
+    [pageParams]="pageInfo().pageParams"
+    [queryParams]="queryParams()"
+    [sortingItems]="sortingItems"
+    (searchHandled)="handleSearch($event)"
+    (sortingHandled)="onSortingChange($event)"
+    (updated)="handleChangePageParams($event)"
+>
+    <ng-container ngProjectAs="filter">
+        <app-collection-filter
+            [filterType]="filterType()"
+            [sourceTypes]="sourceTypes()"
+            (applied)="handleFilter()"
+            (folderSelected)="handleFolderSelected($event)"
+        ></app-collection-filter>
+    </ng-container>
+
+    @if (isOnline) {
+        <ng-container ngProjectAs="actions">
+            <button class="button">
+                <div class="button__icon icon">
+                    <app-svg-icon [icon]="'icon-plus'"></app-svg-icon>
+                </div>
+                <div class="button__name">{{ 'button.add' | transloco }}</div>
+            </button>
+        </ng-container>
+    }
+
+    @if (collectionsMapped() && collectionsMapped().length > 0) {
+        <ng-container ngProjectAs="table">
+            <app-table
+                [class]="'table--deanon-history'"
+                [columns]="columns"
+                [data]="collectionsMapped()"
+                [dictionary]="allowedPlatforms()"
+                [searchedText]="filterForm().get('search')?.value ?? ''"
+                [checkbox]="{ visible: false, main: false }"
+                (rowClicked)="goToDetails($event.id)"
+            ></app-table>
+        </ng-container>
+    }
+
+    <ng-container ngProjectAs="list">
+        @for (collection of collections(); track $index) {
+            <app-collection-card
+                [collection]="collection"
+                [platforms]="allowedPlatforms()"
+                (clicked)="goToDetails(collection.id)"
+                (monitoringCreated)="enableMonitoring(collection.id)"
+                (monitoringDisabled)="disableMonitoring(collection.id)"
+            ></app-collection-card>
+        }
+    </ng-container>
+</app-base-pageable-list>

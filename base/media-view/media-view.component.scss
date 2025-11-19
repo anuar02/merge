@@ -1,0 +1,26 @@
+@use '../../../../../assets/scss/util/rem-mixin' as *;
+@use '../../../../../assets/scss/settings' as *;
+
+.media-container {
+    background: $white;
+    max-height: rem(900px);
+    width: auto;
+    height: auto;
+    position: relative;
+}
+
+.media {
+    max-height: rem(900px);
+    width: auto;
+}
+
+.media-container__button {
+    position: absolute;
+    right: rem(-52px);
+
+    padding: var(--spacing-md, 8px);
+    justify-content: center;
+    align-items: center;
+    background: transparent;
+    border: unset;
+}

@@ -1,0 +1,96 @@
+    <div class="tile tile--lg">
+        <div class="tile__title">
+            {{ 'common.generalInfo' | transloco }}
+        </div>
+        <div class="tile__body">
+            <div class="grid grid--group-details">
+                <div class="list list--group-info">
+                    <app-list-item label="ID">
+                        {{ profile().accountId }}
+                    </app-list-item>
+                    <app-list-item label="Username">
+                        {{ profile().username }}
+                    </app-list-item>
+                    <app-list-item label="URL">
+                        <a [href]="profile().url" class="link" target="_blank">
+                            {{ profile().url }}
+                            <div class="link__icon icon">
+                                <app-svg-icon icon="icon-up-right"/>
+                            </div>
+                        </a>
+                    </app-list-item>
+                    <app-list-item [label]="'accounts.privacy' | transloco">
+                        <app-badge
+                                [label]="profile().privacy ? ('common.close' | transloco) : ('open' | transloco)"
+                                size="sm"
+                                [color]="profile().privacy ? 'error' : 'success'"
+                        />
+                    </app-list-item>
+                    <app-list-item [label]="'accounts.verificationStatus' | transloco">
+                        <app-badge
+                                [label]="profile().verified ? ('accounts.verified' | transloco) : ''"
+                                size="sm"
+                                [color]="profile().verified ? 'success' : 'error'"
+                                prefixIcon="icon-check"
+                        />
+                    </app-list-item>
+                    <app-list-item [label]="'accounts.postsCount' | transloco">
+                        {{ profile().postCount}}
+                    </app-list-item>
+<!--                    <app-list-item [label]="'accounts.subscribers' | transloco">-->
+<!--                        {{ profile().cou }}-->
+<!--                    </app-list-item>-->
+                    <app-list-item [label]="'accounts.groupType' | transloco">
+                        {{ profile().groupType }}
+                    </app-list-item>
+                    <app-list-item [label]="'accounts.addedToSystem' | transloco">
+                        {{ profile().createdAt | date: 'dd.MM.yyyy HH:mm:ss':'+0500' }}
+                    </app-list-item>
+                    <app-list-item [label]="'accounts.lastCollection' | transloco">
+                        {{ profile().lastCollection | date: 'dd.MM.yyyy HH:mm:ss':'+0500' }}
+                    </app-list-item>
+<!--                    <app-list-item [label]="'accounts.inviteLink' | transloco">-->
+<!--                        <a [href]="profile().link" class="link" target="_blank">-->
+<!--                            {{ data.link }}-->
+<!--                            <div class="link__icon icon">-->
+<!--                                <app-svg-icon icon="icon-up-right"/>-->
+<!--                            </div>-->
+<!--                        </a>-->
+<!--                    </app-list-item>-->
+                </div>
+                <div class="group group--vertical group--4xl">
+                    <div class="panel">
+                        <div class="panel__content">
+                            <div class="group group--vertical group--md">
+                                <div class="text text--sm text--500">
+                                    {{ 'common.tags' | transloco }}
+                                </div>
+                                <div class="group group--sm">
+                                    <app-badge
+                                        *ngFor="let tag of profile().tags"
+                                        [label]="tag"
+                                        size="sm"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="panel__aside">
+<!--                            <button class="button button&#45;&#45;secondary-gray" (click)="openEditTagsModal()">-->
+<!--                                <app-svg-icon icon="icon-pencil"/>-->
+<!--                            </button>-->
+                        </div>
+                    </div>
+                    <div class="grid grid--group-description">
+                        <div class="grid__title">
+                            <div class="text text--sm text--500">
+                                {{ 'common.description' | transloco }}
+                            </div>
+                        </div>
+                        <div class="grid__content">
+                          {{ profile().description }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>

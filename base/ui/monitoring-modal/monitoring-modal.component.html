@@ -1,0 +1,104 @@
+<app-modal-wrap
+    [footer]="{ confirmButtonName: 'button.confirm', cancelButtonName: 'button.cancel' }"
+    (closeModal)="onCancel()"
+    (cancelEvent)="onCancel()"
+    (confirmEvent)="onConfirm()"
+>
+    <div modal-header>
+        <div class="featured-icon featured-icon--modern featured-icon--lg">
+            <app-svg-icon icon="icon-eye"></app-svg-icon>
+        </div>
+    </div>
+    <div modal-body>
+        <div class="spacing spacing--2xl"></div>
+        <div class="modal__title">
+            {{ 'accounts.putOnMonitoring' | transloco }}
+        </div>
+        <div class="spacing spacing--2xl"></div>
+        <form class="group group--vertical group--2xl" [formGroup]="form">
+            <div class="group">
+                <div class="group__item">
+                    <label class="radio m-r">
+                        <input
+                            class="radio__control"
+                            type="radio"
+                            name="monitoringType"
+                            value="ONE_TIME"
+                            [formControl]="form.controls.monitoringType"
+                        >
+                        <div class="radio__label"> {{ 'accounts.oneTimeColletion' | transloco }} </div>
+                    </label>
+                    <label class="radio">
+                        <input
+                            class="radio__control"
+                            type="radio"
+                            name="monitoringType"
+                            value="REGULAR"
+                            [formControl]="form.controls.monitoringType"
+                        >
+                        <div class="radio__label"> {{ 'accounts.regularCollection' | transloco }} </div>
+                    </label>
+                </div>
+            </div>
+
+            @if (form.controls.monitoringType.getRawValue() === 'REGULAR') {
+                <div class="group">
+                    <div class="group__item">
+                        <div class="m-b">
+                            <div class="text text-500">
+                                {{ 'accounts.collectionPeriod' | transloco }}
+                                <mark>*</mark>
+                            </div>
+                        </div>
+                        <app-custom-datepicker
+                            [mode]="'range'"
+                            [showTime]="true"
+                            [minDate]="today"
+                            [dateFormat]="'DD.MM.YYYY'"
+                            [formControl]="regularPeriod"
+                            [placeholder]="'common.chooseDate' | transloco"
+                        ></app-custom-datepicker>
+                        @if (regularPeriod.invalid && regularPeriod.touched) {
+                            <div class="text text--sm text--error">
+                                @if (regularPeriod.hasError('required')) {
+                                    <ng-container>
+                                        {{ 'common.fieldRequired' | transloco }}
+                                    </ng-container>
+                                }
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+
+            <div class="group">
+                <div class="group__item">
+                    <div class="checkbox m-r">
+                        <input
+                            class="checkbox__control"
+                            type="checkbox"
+                            name="POSTS"
+                            id="POSTS"
+                            value="POSTS"
+                            checked
+                            (change)="onCollectedSectionsCheckboxChanged($event)"
+                        >
+                        <label class="checkbox__label" for="POSTS"> {{ 'accounts.publications' | transloco }} </label>
+                    </div>
+                    <div class="checkbox">
+                        <input
+                            class="checkbox__control"
+                            type="checkbox"
+                            name="MEMBERS"
+                            id="MEMBERS"
+                            value="MEMBERS"
+                            checked
+                            (change)="onCollectedSectionsCheckboxChanged($event)"
+                        >
+                        <label class="checkbox__label" for="MEMBERS"> {{ 'accounts.headerTitle' | transloco }} </label>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</app-modal-wrap>

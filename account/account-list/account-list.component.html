@@ -1,0 +1,58 @@
+<app-base-pageable-list
+    [isLoading]="isLoading()"
+    [data]="accounts()"
+    [totalElements]="pageInfo().totalElements"
+    [totalPages]="pageInfo().totalPages"
+    [pageParams]="pageInfo().pageParams"
+    [queryParams]="queryParams()"
+    [sortingItems]="sortingItems"
+    (searchHandled)="handleSearch($event)"
+    (sortingHandled)="onSortingChange($event)"
+    (updated)="handleChangePageParams($event)"
+
+>
+    <ng-container ngProjectAs="filter">
+        <app-account-filter (applied)="handleFilter()"></app-account-filter>
+    </ng-container>
+
+    @if(isOnline) {
+    <ng-container ngProjectAs="actions">
+        <button class="button" (click)="openAddOpenAccountModal()">
+            <div class="button__icon icon">
+                <app-svg-icon [icon]="'icon-plus'"></app-svg-icon>
+            </div>
+            <div class="button__name">{{ 'button.add' | transloco }}</div>
+        </button>
+        <!-- <app-button-dropdown
+            [items]="createMethods"
+            [icon]="'icon-plus'"
+            [label]="'button.add' | transloco"
+        ></app-button-dropdown> -->
+    </ng-container>
+    }
+    @if (accountsMapped() && accountsMapped().length > 0) {
+    <ng-container ngProjectAs="table">
+        <app-table
+            [class]="'table--deanon-history'"
+            [columns]="columns"
+            [data]="accountsMapped()"
+            [dictionary]="allowedPlatforms()"
+            [searchedText]="filterForm.controls.search.value ?? ''"
+            [checkbox]="{ visible: false, main: false }"
+            (rowClicked)="goToAccountDetails($event.id)"
+        ></app-table>
+    </ng-container>
+    }
+    <ng-container ngProjectAs="list">
+        @for (account of accounts(); track $index) {
+            <app-account-table-card
+                [account]="account"
+                [platforms]="allowedPlatforms()"
+                (clicked)="goToAccountDetails(account.id)"
+                (monitoringCreated)="enableMonitoring(account.id)"
+                (monitoringDisabled)="disableMonitoring(account.id)"
+            ></app-account-table-card>
+        }
+    </ng-container>
+
+</app-base-pageable-list>
