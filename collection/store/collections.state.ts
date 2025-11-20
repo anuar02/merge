@@ -10,12 +10,12 @@ import {
     RemoveFromFolder,
     ToggleFavorite
 } from './collections.actions';
-import {CollectionsApiService} from "../shared/api/api.service";
-import {CollectionEntity, CollectionType} from "../models/collection.entity";
-import {PageInfo, QueryParams} from "../../../../core/common";
-import {ServerResponse} from "../../../../core/server-response";
-import {CollectionsStateModel} from "./collections.state-model";
-import {PageParams} from "../../../../shared/components/pagination-panel/pagination-panel";
+import { CollectionsApiService } from "../shared/api/api.service";
+import { CollectionEntity, CollectionType } from "../models/collection.entity";
+import { PageInfo, QueryParams } from "../../../../core/common";
+import { ServerResponse } from "../../../../core/server-response";
+import { CollectionsStateModel } from "./collections.state-model";
+import { PageParams } from "../../../../shared/components/pagination-panel/pagination-panel";
 
 @State<CollectionsStateModel>({
     name: 'collections',
@@ -25,22 +25,36 @@ import {PageParams} from "../../../../shared/components/pagination-panel/paginat
 export class CollectionsState {
     private apiService = inject(CollectionsApiService);
 
-    // Generic selectors that work for all types
+    @Selector()
+    static getState(state: CollectionsStateModel): CollectionsStateModel {
+        return state;
+    }
+
     @Selector()
     static getCollectionsByType(state: CollectionsStateModel) {
         return (type: CollectionType): CollectionEntity[] => {
-            return state.getCollectionsForType(type).content;
+            if (!state || typeof state.getCollectionsForType !== 'function') {
+                return [];
+            }
+            return state.getCollectionsForType(type).content || [];
         };
     }
 
     @Selector()
     static getPageInfoByType(state: CollectionsStateModel) {
         return (type: CollectionType): PageInfo => {
+            if (!state || typeof state.getCollectionsForType !== 'function') {
+                return {
+                    totalElements: 0,
+                    totalPages: 0,
+                    pageParams: new PageParams(0, 50)
+                };
+            }
             const data = state.getCollectionsForType(type);
             return {
-                totalElements: data.totalElements,
-                totalPages: data.totalPages,
-                pageParams: new PageParams(data.number, data.size)
+                totalElements: data.totalElements || 0,
+                totalPages: data.totalPages || 0,
+                pageParams: new PageParams(data.number || 0, data.size || 50)
             };
         };
     }
@@ -48,6 +62,9 @@ export class CollectionsState {
     @Selector()
     static getIsLoadingByType(state: CollectionsStateModel) {
         return (type: CollectionType): boolean => {
+            if (!state || typeof state.getLoadingStateForType !== 'function') {
+                return false;
+            }
             return state.getLoadingStateForType(type);
         };
     }
@@ -55,29 +72,32 @@ export class CollectionsState {
     @Selector()
     static getQueryParamsByType(state: CollectionsStateModel) {
         return (type: CollectionType): QueryParams => {
+            if (!state || typeof state.getQueryParamsForType !== 'function') {
+                return { page: 0, size: 50, sort: 'lastCollectedAt,desc' };
+            }
             return state.getQueryParamsForType(type);
         };
     }
 
     @Selector()
     static getActiveCollectionType(state: CollectionsStateModel): CollectionType {
-        return state.activeCollectionType;
+        return state?.activeCollectionType || 'GROUP';
     }
 
     // Specific selectors for each type (for convenience)
     @Selector()
     static getGroups(state: CollectionsStateModel): CollectionEntity[] {
-        return state.groups.content;
+        return state?.groups?.content || [];
     }
 
     @Selector()
     static getAccounts(state: CollectionsStateModel): CollectionEntity[] {
-        return state.accounts.content;
+        return state?.accounts?.content || [];
     }
 
     @Selector()
     static getBots(state: CollectionsStateModel): CollectionEntity[] {
-        return state.bots.content;
+        return state?.bots?.content || [];
     }
 
     // Actions
@@ -86,7 +106,23 @@ export class CollectionsState {
         ctx: StateContext<CollectionsStateModel>,
         { collectionType, payload }: GetCollections
     ): Observable<ServerResponse<CollectionEntity>> {
-        const queryParams = ctx.getState().getQueryParamsForType(collectionType);
+        const state = ctx.getState();
+
+        // Get query params directly without using the method
+        let queryParams: QueryParams;
+        switch (collectionType) {
+            case 'GROUP':
+                queryParams = state.groupsQueryParams;
+                break;
+            case 'ACCOUNT':
+                queryParams = state.accountsQueryParams;
+                break;
+            case 'BOT':
+                queryParams = state.botsQueryParams;
+                break;
+            default:
+                queryParams = { page: 0, size: 50, sort: 'lastCollectedAt,desc' };
+        }
 
         // Set loading state based on type
         const loadingPatch: Partial<CollectionsStateModel> = {};

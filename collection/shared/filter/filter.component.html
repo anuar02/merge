@@ -1,12 +1,4 @@
-<div class="filter-container">
-    <!-- Folder Tree -->
-    <app-folder-tree
-        [title]="getFolderTitle()"
-        (selectFolderEvent)="onFolderSelected($event)"
-    >
-    </app-folder-tree>
-
-    <!-- Platform Filters -->
+<div class="filter-container h--full">
     <div class="tile">
         <div class="tile__header">
             <div class="tile__title">{{ getFilterTitle() | transloco }}</div>
@@ -29,7 +21,6 @@
                                                             [name]="platform.name"
                                                             [id]="platform.name"
                                                             [value]="platform.name"
-                                                            [checked]="(formGroup().get('platforms') as any).getRawValue().includes(platform.name)"
                                                             (change)="onPlatformsCheckboxChanged($event)"
                                                         >
                                                         <label class="checkbox__label" [for]="platform.name">

@@ -1,6 +1,5 @@
-import { inject, Injectable, Signal } from '@angular/core';
+import { inject, Injectable, Signal, computed } from '@angular/core';
 import { select, Store } from '@ngxs/store';
-import { computed } from '@angular/core';
 
 import {
     GetCollections,
@@ -9,71 +8,148 @@ import {
     ResetCollections,
     AddToFolder,
     RemoveFromFolder,
-    ToggleFavorite
+    ToggleFavorite,
 } from './collections.actions';
 import { CollectionsState } from './collections.state';
-import { CollectionEntity, CollectionPayload, CollectionType } from '../models/collection.entity';
-import {PageInfo, QueryParams} from "../../../../core/common";
+import {
+    CollectionEntity,
+    CollectionPayload,
+    CollectionType,
+} from '../models/collection.entity';
+import { PageInfo, QueryParams } from '../../../../core/common';
+import { CollectionsStateModel } from './collections.state-model';
+import { ServerResponse } from '../../../../core/server-response';
+import { PageParams } from '../../../../shared/components/pagination-panel/pagination-panel';
 
 @Injectable()
 export class FacadeCollectionsService {
     private readonly store = inject(Store);
 
-    // Active collection type
-    activeCollectionType: Signal<CollectionType> = select(CollectionsState.getActiveCollectionType);
+    private readonly stateSignal: Signal<CollectionsStateModel> =
+        select(CollectionsState.getState);
 
-    // Create computed signals for current active type
-    collections = computed(() => {
+    activeCollectionType: Signal<CollectionType> =
+        select(CollectionsState.getActiveCollectionType);
+
+    private getSlice(
+        state: CollectionsStateModel,
+        type: CollectionType,
+    ): ServerResponse<CollectionEntity> {
+        switch (type) {
+            case 'GROUP':
+                return state.groups;
+            case 'ACCOUNT':
+                return state.accounts;
+            case 'BOT':
+                return state.bots;
+            default:
+                return new ServerResponse<CollectionEntity>();
+        }
+    }
+
+    private getLoading(state: CollectionsStateModel, type: CollectionType): boolean {
+        switch (type) {
+            case 'GROUP':
+                return state.groupsLoading;
+            case 'ACCOUNT':
+                return state.accountsLoading;
+            case 'BOT':
+                return state.botsLoading;
+            default:
+                return false;
+        }
+    }
+
+    private getQuery(state: CollectionsStateModel, type: CollectionType): QueryParams {
+        switch (type) {
+            case 'GROUP':
+                return state.groupsQueryParams;
+            case 'ACCOUNT':
+                return state.accountsQueryParams;
+            case 'BOT':
+                return state.botsQueryParams;
+            default:
+                return { page: 0, size: 50, sort: 'lastCollectedAt,desc' };
+        }
+    }
+
+    collections = computed<CollectionEntity[]>(() => {
+        const state = this.stateSignal();
         const type = this.activeCollectionType();
-        return this.store.selectSnapshot(CollectionsState.getCollectionsByType)(type);
+        const slice = this.getSlice(state, type);
+        return slice.content ?? [];
     });
 
-    pageInfo = computed(() => {
+    pageInfo = computed<PageInfo>(() => {
+        const state = this.stateSignal();
         const type = this.activeCollectionType();
-        return this.store.selectSnapshot(CollectionsState.getPageInfoByType)(type);
+        const slice = this.getSlice(state, type);
+
+        return {
+            totalElements: slice.totalElements ?? 0,
+            totalPages: slice.totalPages ?? 0,
+            pageParams: new PageParams(
+                slice.number ?? 0,
+                slice.size ?? 50,
+            ),
+        };
     });
 
-    isLoading = computed(() => {
+    isLoading = computed<boolean>(() => {
+        const state = this.stateSignal();
         const type = this.activeCollectionType();
-        return this.store.selectSnapshot(CollectionsState.getIsLoadingByType)(type);
+        return this.getLoading(state, type);
     });
 
-    queryParams = computed(() => {
+    queryParams = computed<QueryParams>(() => {
+        const state = this.stateSignal();
         const type = this.activeCollectionType();
-        return this.store.selectSnapshot(CollectionsState.getQueryParamsByType)(type);
+        return this.getQuery(state, type);
     });
 
-    // Specific type signals (for components that need direct access)
-    groups: Signal<CollectionEntity[]> = select(CollectionsState.getGroups);
-    accounts: Signal<CollectionEntity[]> = select(CollectionsState.getAccounts);
-    bots: Signal<CollectionEntity[]> = select(CollectionsState.getBots);
-
-    // Methods to get data for specific types
     getCollectionsByType(type: CollectionType): Signal<CollectionEntity[]> {
-        return computed(() => {
-            return this.store.selectSnapshot(CollectionsState.getCollectionsByType)(type);
+        return computed<CollectionEntity[]>(() => {
+            const state = this.stateSignal();
+            const slice = this.getSlice(state, type);
+            return slice.content ?? [];
         });
     }
 
     getPageInfoByType(type: CollectionType): Signal<PageInfo> {
-        return computed(() => {
-            return this.store.selectSnapshot(CollectionsState.getPageInfoByType)(type);
+        return computed<PageInfo>(() => {
+            const state = this.stateSignal();
+            const slice = this.getSlice(state, type);
+
+            return {
+                totalElements: slice.totalElements ?? 0,
+                totalPages: slice.totalPages ?? 0,
+                pageParams: new PageParams(
+                    slice.number ?? 0,
+                    slice.size ?? 50,
+                ),
+            };
         });
     }
 
     getIsLoadingByType(type: CollectionType): Signal<boolean> {
-        return computed(() => {
-            return this.store.selectSnapshot(CollectionsState.getIsLoadingByType)(type);
+        return computed<boolean>(() => {
+            const state = this.stateSignal();
+            return this.getLoading(state, type);
         });
     }
 
     getQueryParamsByType(type: CollectionType): Signal<QueryParams> {
-        return computed(() => {
-            return this.store.selectSnapshot(CollectionsState.getQueryParamsByType)(type);
+        return computed<QueryParams>(() => {
+            const state = this.stateSignal();
+            return this.getQuery(state, type);
         });
     }
 
-    // Action dispatchers
+    // Можно оставить, если где-то ещё юзаются
+    groups: Signal<CollectionEntity[]> = select(CollectionsState.getGroups);
+    accounts: Signal<CollectionEntity[]> = select(CollectionsState.getAccounts);
+    bots: Signal<CollectionEntity[]> = select(CollectionsState.getBots);
+
     getCollections(type: CollectionType, payload: CollectionPayload) {
         return this.store.dispatch(new GetCollections(type, payload));
     }
@@ -91,14 +167,20 @@ export class FacadeCollectionsService {
     }
 
     addToFolder(type: CollectionType, collectionId: string, folderId: string) {
-        return this.store.dispatch(new AddToFolder(type, collectionId, folderId));
+        return this.store.dispatch(
+            new AddToFolder(type, collectionId, folderId),
+        );
     }
 
     removeFromFolder(type: CollectionType, collectionId: string) {
-        return this.store.dispatch(new RemoveFromFolder(type, collectionId));
+        return this.store.dispatch(
+            new RemoveFromFolder(type, collectionId),
+        );
     }
 
     toggleFavorite(type: CollectionType, collectionId: string, isFavorite: boolean) {
-        return this.store.dispatch(new ToggleFavorite(type, collectionId, isFavorite));
+        return this.store.dispatch(
+            new ToggleFavorite(type, collectionId, isFavorite),
+        );
     }
 }

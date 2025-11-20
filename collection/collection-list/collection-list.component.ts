@@ -19,11 +19,14 @@ import {ModalService} from "../../../../shared/components/modal/modal.service";
 import {NotificationsService} from "../../../../shared/services/notifications.service";
 import {getPlatforms} from "../../mocks/allowed-platforms.mock";
 import {environment} from "../../../../../environments/environment";
-import {Folder} from "../../../../shared/components/folder-tree/folder-tree.component";
+import {Folder, FolderTreeComponent} from "../../../../shared/components/folder-tree/folder-tree.component";
 import {SortingItem} from "../../../../shared/components/sorting/sorting";
 import {Column} from "../../../../shared/components/data-table/components/table/table";
 import {PageParams} from "../../../../shared/components/pagination-panel/pagination-panel";
 import {MonitoringModalComponent} from "../../base/ui/monitoring-modal/monitoring-modal.component";
+import {TabsComponent} from "../../../../shared/components/tabs/tabs.component";
+import {Tab} from "../../../../shared/components/tabs/tabs";
+import {ViewSelectorComponent} from "../../../../shared/components/view-selector/view-selector.component";
 
 @Component({
     selector: 'app-collection-list',
@@ -37,6 +40,9 @@ import {MonitoringModalComponent} from "../../base/ui/monitoring-modal/monitorin
         CollectionCardComponent,
         TableComponent,
         SvgIconComponent,
+        TabsComponent,
+        FolderTreeComponent,
+        ViewSelectorComponent,
     ],
     templateUrl: './collection-list.component.html',
     providers: [
@@ -116,7 +122,20 @@ export class CollectionListComponent implements OnInit {
         }));
     });
 
-    // Sorting items
+    tabs: Tab[] = [
+        new Tab('navbar.groups', 'collections/groups', true, '', 'groups'),
+        new Tab('navbar.accounts', 'collections/accounts', true, '', 'accounts'),
+        new Tab('navbar.bots', 'collections/bots', true, '', 'bots'),
+    ];
+
+    get activeTabKey(): string {
+        const url = this.router.url;
+        if (url.includes('groups')) return 'groups';
+        if (url.includes('accounts')) return 'accounts';
+        if (url.includes('bots')) return 'bots';
+        return '';
+    }
+
     public sortingItems: SortingItem[] = [
         {
             label: 'common.firstCollectedDateSortLabel',
@@ -172,6 +191,7 @@ export class CollectionListComponent implements OnInit {
         // Load collections
         this.getCollections();
 
+
         // Add monitoring column if online
         if (this.isOnline && !this.columns.some(obj => obj.key === 'actions')) {
             this.addMonitoringColumn();
@@ -183,9 +203,10 @@ export class CollectionListComponent implements OnInit {
         const payload = {
             ...form.getRawValue(),
             folderId: this.selectedFolder?.id !== 'favorites' ? this.selectedFolder?.id : undefined,
-            isFavorite: this.selectedFolder?.id === 'favorites' ? true : undefined
+            isFavorite: this.selectedFolder?.id === 'favorites' ? true : undefined,
         };
-        this.facadeService.getCollections(this.collectionType(), payload);
+
+        this.facadeService.getCollections(this.collectionType(), payload).subscribe();
     }
 
     handleChangePageParams(pageParams: PageParams): void {

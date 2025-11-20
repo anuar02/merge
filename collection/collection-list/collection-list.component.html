@@ -10,6 +10,12 @@
     (sortingHandled)="onSortingChange($event)"
     (updated)="handleChangePageParams($event)"
 >
+    <ng-container ngProjectAs="tree">
+        <app-folder-tree
+            (selectFolderEvent)="handleFolderSelected($event)"
+        ></app-folder-tree>
+    </ng-container>
+
     <ng-container ngProjectAs="filter">
         <app-collection-filter
             [filterType]="filterType()"
@@ -17,6 +23,17 @@
             (applied)="handleFilter()"
             (folderSelected)="handleFolderSelected($event)"
         ></app-collection-filter>
+    </ng-container>
+
+    <ng-container ngProjectAs="tabs">
+        <app-view-selector
+            [tabs]="tabs"
+            [activeTabKey]="activeTabKey"
+            [showCount]="true"
+            [countValue]="pageInfo().totalElements"
+            [countTabKey]="'groups'"
+        ></app-view-selector>
+
     </ng-container>
 
     @if (isOnline) {

@@ -16,6 +16,7 @@ export interface CollectionPayload {
 export interface CollectionEntity {
     // Common fields
     id: string;
+    name: string;
     collectionType: CollectionType;
     source: string;
     sourceType: string;
@@ -48,6 +49,9 @@ export interface CollectionEntity {
     createdBy: number;
     global: boolean;
     note?: string;
+    accountCount?: string;
+    botCount?: string;
+    chatCount?: string;
 
     // Deanon
     deanonRequestId?: string;

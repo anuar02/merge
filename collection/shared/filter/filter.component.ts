@@ -3,9 +3,9 @@ import { FormArray, FormControl, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { SourceTypes } from '../../../group/group-list/api/models/groups';
-import {AccordionComponent} from "../../../../deanon/components/accordion/accordion.component";
 import {Folder, FolderTreeComponent} from "../../../../../shared/components/folder-tree/folder-tree.component";
 import {CollectionFilterService, CollectionFilterType} from "./filter.service";
+import {AccordionComponent} from "../../../../../shared/components/accordion/accordion.component";
 
 @Component({
     selector: 'app-collection-filter',
@@ -14,10 +14,10 @@ import {CollectionFilterService, CollectionFilterType} from "./filter.service";
         CommonModule,
         ReactiveFormsModule,
         AccordionComponent,
-        FolderTreeComponent,
         TranslocoPipe,
+        AccordionComponent,
     ],
-    templateUrl: './collection-filter.component.html',
+    templateUrl: 'filter.component.html',
 })
 export class CollectionFilterComponent implements OnInit {
     // Inputs
@@ -69,27 +69,6 @@ export class CollectionFilterComponent implements OnInit {
         this.applied.emit();
     }
 
-    onFolderSelected(folder: Folder): void {
-        this.selectedFolder = folder;
-        const form = this.formGroup();
-
-        // Handle favorites folder
-        if (folder.id === 'favorites') {
-            form.patchValue({
-                folderId: null,
-                isFavorite: true
-            });
-        } else {
-            form.patchValue({
-                folderId: folder.id,
-                isFavorite: false
-            });
-        }
-
-        this.folderSelected.emit(folder);
-        this.applied.emit();
-    }
-
     applyFilter(): void {
         this.applied.emit();
     }
@@ -104,13 +83,4 @@ export class CollectionFilterComponent implements OnInit {
         return titles[this.filterType()];
     }
 
-    // Get folder tree title based on collection type
-    getFolderTitle(): string {
-        const titles: Record<CollectionFilterType, string> = {
-            groups: 'common.myFolders',
-            accounts: 'common.myFolders',
-            bots: 'common.myFolders'
-        };
-        return titles[this.filterType()];
-    }
 }

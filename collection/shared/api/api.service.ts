@@ -14,7 +14,6 @@ import {SourceTypes} from "../../../group/group-list/api/models/groups";
 export class CollectionsApiService {
     private http = inject(HttpClient);
 
-    // Unified filter method that works for all collection types
     filterCollections(
         type: CollectionType,
         payload: CollectionPayload,
@@ -22,22 +21,16 @@ export class CollectionsApiService {
     ): Observable<ServerResponse<CollectionEntity>> {
         const endpoint = this.getEndpointForType(type);
 
+        const apiPayload = {
+            search: payload.search || null,
+            platforms: payload.platforms || []
+        };
+
         return this.http.post<ServerResponse<CollectionEntity>>(
             `resources/${endpoint}/filter`,
-            { ...payload, collectionType: type },
+            apiPayload,
             { params: { ...params } }
-        ).pipe(
-            switchMap((res) => {
-                if (res.content.length === 0) {
-                    return of(res);
-                }
-                return forkJoin(
-                    res.content.map((item) => this.enrichWithPhoto(item, type))
-                ).pipe(
-                    map(content => ({ ...res, content }))
-                );
-            })
-        );
+        )
     }
 
     // Get single collection by ID
@@ -109,6 +102,7 @@ export class CollectionsApiService {
 
     // Private helper methods
     private getEndpointForType(type: CollectionType): string {
+        console.log(type, 'type')
         const endpoints: Record<CollectionType, string> = {
             'GROUP': 'group',
             'ACCOUNT': 'account',
@@ -121,6 +115,8 @@ export class CollectionsApiService {
         item: CollectionEntity,
         type: CollectionType
     ): Observable<CollectionEntity> {
+        console.log('enriched')
+
         if (!item.photo) {
             return of({
                 ...item,
@@ -144,6 +140,7 @@ export class CollectionsApiService {
     }
 
     private getPhoto(path: string): Observable<Blob> {
+        console.log('got photo')
         return this.http.get('resources/media', {
             params: { path },
             responseType: 'blob'
