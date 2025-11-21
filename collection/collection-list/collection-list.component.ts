@@ -1,5 +1,7 @@
-import { Component, computed, DestroyRef, HostBinding, inject, OnInit, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+// collection-list.component.ts
+
+import {Component, computed, DestroyRef, effect, HostBinding, inject, OnInit, signal} from '@angular/core';
+import {CommonModule, DatePipe} from '@angular/common';
 import { Router, RouterModule, ActivatedRoute } from '@angular/router';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { TranslocoPipe } from '@jsverse/transloco';
@@ -7,7 +9,7 @@ import { map } from 'rxjs';
 import {BasePageableListComponent} from "../../base/base-pageable-list/base-pageable-list.component";
 import {CollectionFilterComponent} from "../shared/filter/filter.component";
 import {CollectionCardComponent} from "../shared/card/card.component";
-import {TableComponent} from "../../../../shared/components/data-table/components/table/table.component";
+import {AppTableComponent} from "../../../../shared/components-new/table/table.component";
 import {SvgIconComponent} from "../../../../shared/components/svg-icon/svg-icon.component";
 import {CollectionFilterService, CollectionFilterType} from "../shared/filter/filter.service";
 import {MONITORING_API_TOKEN} from "../../base/ui/monitoring-modal/monitoring-api.token";
@@ -21,16 +23,18 @@ import {getPlatforms} from "../../mocks/allowed-platforms.mock";
 import {environment} from "../../../../../environments/environment";
 import {Folder, FolderTreeComponent} from "../../../../shared/components/folder-tree/folder-tree.component";
 import {SortingItem} from "../../../../shared/components/sorting/sorting";
-import {Column} from "../../../../shared/components/data-table/components/table/table";
 import {PageParams} from "../../../../shared/components/pagination-panel/pagination-panel";
 import {MonitoringModalComponent} from "../../base/ui/monitoring-modal/monitoring-modal.component";
 import {TabsComponent} from "../../../../shared/components/tabs/tabs.component";
 import {Tab} from "../../../../shared/components/tabs/tabs";
 import {ViewSelectorComponent} from "../../../../shared/components/view-selector/view-selector.component";
+import {ColumnSort, TableColumn} from "../../../../shared/components-new/table/table";
+import { CollectionListColumnsConfig } from './collection-list-columns.config';
 
 @Component({
     selector: 'app-collection-list',
     standalone: true,
+    templateUrl: 'collection-list.component.html',
     imports: [
         CommonModule,
         RouterModule,
@@ -38,15 +42,15 @@ import {ViewSelectorComponent} from "../../../../shared/components/view-selector
         BasePageableListComponent,
         CollectionFilterComponent,
         CollectionCardComponent,
-        TableComponent,
+        AppTableComponent,
         SvgIconComponent,
         TabsComponent,
         FolderTreeComponent,
         ViewSelectorComponent,
     ],
-    templateUrl: './collection-list.component.html',
     providers: [
         CollectionFilterService,
+        DatePipe,
         {
             provide: MONITORING_API_TOKEN,
             useClass: AccountApiService,
@@ -57,8 +61,9 @@ export class CollectionListComponent implements OnInit {
     @HostBinding('class') public class = 'body';
 
     private route = inject(ActivatedRoute);
+    private datePipe = inject(DatePipe);
+    private columnsConfig!: CollectionListColumnsConfig;
 
-    // Get collection type from route data
     public collectionType = toSignal(
         this.route.data.pipe(map(data => data['collectionType'] as CollectionType)),
         { initialValue: 'GROUP' as CollectionType }
@@ -69,7 +74,6 @@ export class CollectionListComponent implements OnInit {
         return type === 'GROUP' ? 'groups' : type === 'ACCOUNT' ? 'accounts' : 'bots';
     });
 
-    // Services
     private facadeService = inject(FacadeCollectionsService);
     private filterService = inject(CollectionFilterService);
     private apiService = inject(CollectionsApiService);
@@ -79,23 +83,19 @@ export class CollectionListComponent implements OnInit {
     private destroyRef = inject(DestroyRef);
     private monitoringApi = inject(MONITORING_API_TOKEN);
 
-    // State
     public allowedPlatforms = signal(getPlatforms());
     public isOnline = environment.appType.toUpperCase() === 'ONLINE';
     public selectedFolder: Folder | null = null;
 
-    // Source types for filter
     public sourceTypes = toSignal(
         this.apiService.getSourceTypes().pipe(takeUntilDestroyed()),
         { initialValue: [] }
     );
 
-    // Filter form
     public filterForm = computed(() => {
         return this.filterService.createFilterForm(this.filterType());
     });
 
-    // Data from store
     public collections = computed(() => {
         return this.facadeService.getCollectionsByType(this.collectionType())();
     });
@@ -112,9 +112,8 @@ export class CollectionListComponent implements OnInit {
         return this.facadeService.getQueryParamsByType(this.collectionType())();
     });
 
-    // Mapped collections for table with platform IDs
     public collectionsMapped = computed(() => {
-        return this.collections().map((collection) => ({
+        return this.collectionsWithPhotoUrls().map((collection) => ({
             ...collection,
             platform: this.allowedPlatforms().find((p) =>
                 p?.name?.toLowerCase() === collection?.platform?.toLowerCase()
@@ -122,11 +121,38 @@ export class CollectionListComponent implements OnInit {
         }));
     });
 
+    public collectionsWithPhotoUrls = computed(() => {
+        return this.collections().map((collection) => ({
+            ...collection,
+            photo: this.getPhotoUrl(collection.photo, collection.collectionType)
+        }));
+    });
+
+    public selectedRows = signal<number[]>([]);
+
+    public tableColumns = computed(() => {
+        const type = this.collectionType();
+        if (type === 'GROUP') {
+            return this.columnsConfig.getGroupsColumns();
+        } else if (type === 'ACCOUNT') {
+            return this.columnsConfig.getAccountsColumns();
+        } else {
+            return this.columnsConfig.getBotsColumns();
+        }
+    });
+
     tabs: Tab[] = [
         new Tab('navbar.groups', 'collections/groups', true, '', 'groups'),
         new Tab('navbar.accounts', 'collections/accounts', true, '', 'accounts'),
         new Tab('navbar.bots', 'collections/bots', true, '', 'bots'),
     ];
+
+    private getPhotoUrl(photo: string, type: CollectionType): string {
+        if (!photo || photo.startsWith('blob:') || photo.startsWith('assets/') || photo.startsWith('http')) {
+            return photo;
+        }
+        return `${environment.apiUrl}/resources/media?path=${encodeURIComponent(photo)}`;
+    }
 
     get activeTabKey(): string {
         const url = this.router.url;
@@ -149,7 +175,7 @@ export class CollectionListComponent implements OnInit {
         },
         {
             label: 'common.fullNameSortLabel',
-            value: 'title',
+            value: 'groupName',
             icon: '',
             labelDesc: 'common.sortDesc',
             labelAsc: 'common.sortAsc'
@@ -163,39 +189,33 @@ export class CollectionListComponent implements OnInit {
         }
     ];
 
-    // Table columns
-    public columns: Column[] = [
-        {
-            key: 'name',
-            label: 'common.name',
-            type: 'account',
-            style: 'width: 30rem',
-            data: {
-                imgSize: 'lg',
-                username: 'username',
-                url: 'url',
-                id: 'searchValue',
-                platform: 'platform',
-                type: 'collections'
-            },
-            sticky: true,
-        } as Column,
-        new Column('groupCount', 'accounts.groups'),
-        new Column('postCount', 'accounts.publicationsCount'),
-    ];
+    public activeSort = signal<ColumnSort>({
+        key: 'groupName',
+        order: 'asc',
+    });
+    constructor() {
+        effect(() => {
+            console.log('pageInfo:', this.pageInfo());
+        });
+    }
 
     ngOnInit(): void {
-        // Set active collection type in the store
-        this.facadeService.setActiveCollectionType(this.collectionType());
+        // Initialize columns config
+        this.columnsConfig = new CollectionListColumnsConfig(
+            this.datePipe,
+            this.getPhotoUrl.bind(this),
+            this.getItemTags.bind(this),
+            this.enableMonitoring.bind(this),
+            this.disableMonitoring.bind(this),
+            this.isOnline
+        );
 
-        // Load collections
+
+
+        this.facadeService.setActiveCollectionType(this.collectionType());
         this.getCollections();
 
-
-        // Add monitoring column if online
-        if (this.isOnline && !this.columns.some(obj => obj.key === 'actions')) {
-            this.addMonitoringColumn();
-        }
+        console.log(this.pageInfo())
     }
 
     getCollections(): void {
@@ -255,7 +275,7 @@ export class CollectionListComponent implements OnInit {
             'ACCOUNT': 'collections/accounts',
             'BOT': 'collections/bots'
         };
-        this.router.navigate([typeRoutes[this.collectionType()], 'card', id]);
+        this.router.navigate([`${typeRoutes[this.collectionType()]}`, id]);
     }
 
     enableMonitoring(collectionId: string): void {
@@ -263,6 +283,8 @@ export class CollectionListComponent implements OnInit {
             allowOverlayClick: true,
             data: { accountId: collectionId },
             whenClosed: (monitoringDetails) => {
+                if (!monitoringDetails) return;
+
                 this.monitoringApi.createMonitoring(collectionId, monitoringDetails).pipe(
                     takeUntilDestroyed(this.destroyRef),
                 ).subscribe(() => {
@@ -290,33 +312,48 @@ export class CollectionListComponent implements OnInit {
         });
     }
 
-    private addMonitoringColumn(): void {
-        this.columns.push({
-            key: 'actions',
-            label: 'common.actions',
-            type: 'buttons',
-            style: 'width: 5rem',
-            data: {
-                buttons: [{
-                    icon: 'icon-eye',
-                    action: ((row: any, event: MouseEvent) => {
-                        if (event) event.stopPropagation();
-                        this.enableMonitoring(row.id);
-                    }),
-                    isButtonVisible: ((row: any): boolean => !row?.monitor),
-                }, {
-                    icon: 'icon-eye-off',
-                    action: ((row: any, event: MouseEvent) => {
-                        if (event) event.stopPropagation();
-                        this.disableMonitoring(row.id);
-                    }),
-                    isButtonVisible: ((row: any): boolean => row?.monitor ?? false),
-                }]
-            }
-        });
+    private getItemTags(item: any): string[] {
+        const tags: string[] = [];
+
+        if (item.contentTag) {
+            tags.push(item.contentTag);
+        }
+
+        if (item.contentTopic) {
+            tags.push(item.contentTopic);
+        }
+
+        return tags;
     }
 
-    // Get title based on collection type
+    onSortClicked(event: ColumnSort): void {
+        this.activeSort.set(event);
+        const sortParam = `${event.key},${event.order}`;
+        this.onSortingChange(sortParam);
+    }
+
+    onRowSelected(index: number): void {
+        const current = this.selectedRows();
+        const indexPos = current.indexOf(index);
+
+        if (indexPos > -1) {
+            this.selectedRows.set(current.filter(i => i !== index));
+        } else {
+            this.selectedRows.set([...current, index]);
+        }
+    }
+
+    onAllSelected(): void {
+        const current = this.selectedRows();
+        const allCount = this.collections().length;
+
+        if (current.length === allCount) {
+            this.selectedRows.set([]);
+        } else {
+            this.selectedRows.set(this.collections().map((_, i) => i));
+        }
+    }
+
     getPageTitle(): string {
         const titles: Record<CollectionType, string> = {
             'GROUP': 'navbar.groups',

@@ -30,7 +30,16 @@ export class CollectionsApiService {
             `resources/${endpoint}/filter`,
             apiPayload,
             { params: { ...params } }
-        )
+        ).pipe(
+            map((res) => {
+                res.content = res.content.map(item => ({
+                    ...item,
+                    photo: item.photo || this.getDefaultPhoto(type),
+                    collectionType: type
+                }));
+                return res;
+            })
+        );
     }
 
     // Get single collection by ID
@@ -102,7 +111,6 @@ export class CollectionsApiService {
 
     // Private helper methods
     private getEndpointForType(type: CollectionType): string {
-        console.log(type, 'type')
         const endpoints: Record<CollectionType, string> = {
             'GROUP': 'group',
             'ACCOUNT': 'account',

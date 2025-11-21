@@ -247,7 +247,7 @@ export class AccountListComponent implements OnInit {
     }
 
     public goToAccountDetails(id: string): void {
-        this.router.navigate(['account', 'card', id]);
+        this.router.navigate(['collections/accounts', id]);
     }
 
     enableMonitoring(accountId: string) {

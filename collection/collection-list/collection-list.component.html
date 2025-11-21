@@ -31,7 +31,7 @@
             [activeTabKey]="activeTabKey"
             [showCount]="true"
             [countValue]="pageInfo().totalElements"
-            [countTabKey]="'groups'"
+            [countTabKey]="activeTabKey"
         ></app-view-selector>
 
     </ng-container>
@@ -49,15 +49,17 @@
 
     @if (collectionsMapped() && collectionsMapped().length > 0) {
         <ng-container ngProjectAs="table">
-            <app-table
-                [class]="'table--deanon-history'"
-                [columns]="columns"
+            <app-table-component
+                [columns]="tableColumns()"
                 [data]="collectionsMapped()"
-                [dictionary]="allowedPlatforms()"
-                [searchedText]="filterForm().get('search')?.value ?? ''"
-                [checkbox]="{ visible: false, main: false }"
+                [selectable]="true"
+                [selectedRows]="selectedRows()"
+                [activeSort]="activeSort()"
                 (rowClicked)="goToDetails($event.id)"
-            ></app-table>
+                (sortClicked)="onSortClicked($event)"
+                (rowSelected)="onRowSelected($event)"
+                (allSelected)="onAllSelected()"
+            ></app-table-component>
         </ng-container>
     }
 

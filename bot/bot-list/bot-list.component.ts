@@ -207,7 +207,7 @@ export class BotListComponent implements OnInit, OnDestroy {
     }
 
     public goToBotDetails(id: string): void {
-        this.router.navigate(['bot', 'card', id]);
+        this.router.navigate(['/collections/bot', id]);
     }
 
     public openSessionsDrawer(botId: string): void {

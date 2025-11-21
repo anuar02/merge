@@ -1,35 +1,12 @@
-<!-- Опциональный чекбокс для мультиселекта -->
-<app-checkbox
-    *ngIf="checkbox()"
-    [index]="index()"
-    class="card__checkbox"
-    [hasMouseOverEvent]="checkbox()"
-    [display]="selectedRows().includes(index()) ? 'block' : 'none'"
-    [value]="selectedRows().includes(index())"
-    (checked)="onClick()"
-    (click)="$event.stopPropagation()"
-></app-checkbox>
-
-<!-- Аватар -->
-<div class="card__avatar" style="width: 2.5rem;">
-    <div class="avatar avatar--group">
+<div class="card__avatar">
+    <div class="avatar avatar__group">
         <div class="avatar__wrapper">
-<!--            <div-->
-<!--                class="avatar__skeleton"-->
-<!--                *ngIf="!avatarLoaded()"-->
-<!--            ></div>-->
-
-<!--            <img-->
-<!--                class="avatar__image"-->
-<!--                [class.avatar__image&#45;&#45;loaded]="avatarLoaded()"-->
-<!--                (click)="onAvatarClick()"-->
-<!--                alt="Avatar"-->
-<!--                (load)="onAvatarLoad()"-->
-<!--                (error)="onAvatarError()"-->
-<!--                loading="lazy"-->
-<!--            >-->
-
-            @defer (when platformId() > 0 && platforms().length > 0) {
+            <img
+                class="avatar__image"
+                alt="Avatar"
+                [src]="getPhotoUrl(collection().photo, collection().collectionType)"
+                (click)="onAvatarClick()">
+            @if (platformId() > 0 && platforms().length > 0) {
                 <app-platform-icon
                     [platform]="platformId()"
                     [platformList]="platforms()"
@@ -39,163 +16,118 @@
     </div>
 </div>
 
-<!-- Детали -->
-<div class="card__details">
-    <!-- Бейджи -->
-    <div class="group">
+<!-- Main Info Section -->
+<div class="card__info">
+    <div class="card__row card__row--primary">
+        <!-- Name -->
+        <span class="text text--md text--700">
+            {{ collection().title || collection().groupName || collection().searchValue }}
+        </span>
+
+        <!-- Username as link -->
+        @if (collection().username) {
+            <button class="card__link" (click)="$event.stopPropagation()">
+                {{ '@' + collection().username }}
+            </button>
+        }
+
+        @if (collection().verified) {
+            <app-badge
+                color="default"
+                [label]="'common.verified' | transloco"
+                [prefixIcon]="'icon-check'"
+            ></app-badge>
+        }
+
+        @if (collectStatus()) {
+            <app-badge
+                [iconColor]="collectStatus().color"
+                [iconSize]="'sm'"
+                [label]="collectStatus().label | transloco"
+                [prefixIcon]="'icon-dot'"
+            ></app-badge>
+        }
         @if (collection().monitor) {
             <app-badge
-                color="success"
-                [label]="'accounts.onMonitoring' | transloco"
-                prefixIcon="icon-eye"
+                [iconColor]="'success'"
+                [prefixIcon]="'icon-eye'"
                 [capitalize]="false"
             ></app-badge>
         }
-<!--        @if (collection().collectStatus) {-->
-<!--            <app-badge-2-->
-<!--                *ngIf="collectStatus()"-->
-<!--                [color]="collectStatus().color"-->
-<!--                [label]="collectStatus().label | transloco"-->
-<!--                [capitalize]="false"-->
-<!--            ></app-badge-2>-->
-<!--        }-->
+
     </div>
 
-    <!-- Название / username / ID / URL -->
-    <div class="card__title">
-        <div class="group group--vertical group--md">
-            <!-- Title -->
-            <div *ngIf="collection().title" class="card__name">
-                {{ collection().title }}
-            </div>
-
-            <!-- Username -->
-            <ng-container *ngIf="collection().username">
-                @defer (when collection().username) {
-                    <div class="card__name">
-                        {{ '@' + collection().username }}
-                    </div>
-                }
-            </ng-container>
-
-            <!-- Account ID -->
-            <ng-container *ngIf="collection().accountId">
-                @defer (when collection().accountId) {
-                    <div class="card__name">
-                        {{ 'ID:' + collection().accountId }}
-                    </div>
-                }
-            </ng-container>
-
-            <!-- URL -->
-            <ng-container *ngIf="collection().url">
-                @defer (when collection().url) {
-                    <div class="card__name">
-                        <a
-                            [href]="collection().url"
-                            class="link"
-                            target="_blank"
-                            (click)="$event.stopPropagation()"
-                        >
-                            {{ collection().url }}
-                            <div class="link__icon icon">
-                                <app-svg-icon icon="icon-up-right"></app-svg-icon>
-                            </div>
-                        </a>
-                    </div>
-                }
-            </ng-container>
-
-            <!-- Фоллбек по searchValue -->
-            @if (!collection().title && !collection().url && !collection().username) {
-                <div class="card__name">
-                    @switch (collection().searchParamType) {
-                        @case ('SCREEN_NAME') {
-                            {{ '@' + collection().searchValue }}
-                        }
-                        @case ('ID') {
-                            {{ 'ID: ' + collection().searchValue }}
-                        }
-                        @case ('URL') {
-                            <a
-                                [href]="collection().searchValue"
-                                class="link"
-                                target="_blank"
-                                (click)="$event.stopPropagation()"
-                            >
-                                {{ collection().searchValue }}
-                                <div class="link__icon icon">
-                                    <app-svg-icon icon="icon-up-right"></app-svg-icon>
-                                </div>
-                            </a>
-                        }
-                    }
-                </div>
-            }
-
-            <!-- Привязанные сущности (если есть) -->
-<!--            <ng-container *ngIf="bindingList().length > 0">-->
-<!--                <div class="grid__label">-->
-<!--                    {{ 'deanon.bindedNumbers' | transloco }}:-->
-<!--                    <app-badge-2-->
-<!--                        *ngFor="let binding of bindingList()"-->
-<!--                        [text]="binding.identifier"-->
-<!--                        type="sm"-->
-<!--                    >-->
-<!--                    </app-badge-2>-->
-<!--                </div>-->
-<!--            </ng-container>-->
+    @if (bindingList().length > 0) {
+        <div class="card__row">
+            <span>{{collection().subscriberCount}}</span>
+            <span>{{collection().postCount}}</span>
         </div>
+    }
+
+    <div class="card__row card__row--stats">
+        @if (collection().subscriberCount) {
+            <div class="card__stat">
+                <span class="card__stat-value">{{ collection().subscriberCount }}</span>
+                <span class="card__stat-delta">+4</span>
+                <span class="card__stat-label">{{ 'accounts.participantsCount' | transloco }}</span>
+            </div>
+        }
+
+        @if (collection().postCount) {
+            <div class="card__stat">
+                <span class="card__stat-value">{{ collection().postCount }}</span>
+                <span class="card__stat-delta">+4</span>
+                <span class="card__stat-label">{{ 'accounts.publicationCount' | transloco }}</span>
+            </div>
+        }
+
+        @if (collection().botCount) {
+            <div class="card__stat">
+                <span class="card__stat-value">{{ collection().botCount }}</span>
+                <span class="card__stat-delta">+4</span>
+                <span class="card__stat-label">{{ 'accounts.avatarCount' | transloco }}</span>
+            </div>
+        }
     </div>
+
+    <!-- Fourth Row: Tags -->
+    @if (tags().length > 0) {
+        <div class="card__row card__row--tags">
+            @for (tag of tags(); track $index) {
+                <app-badge
+                    color="default"
+                    [label]="tag"
+                    [capitalize]="false"
+                ></app-badge>
+            }
+        </div>
+    }
 </div>
 
-<!-- Правая колонка / метрики / мониторинг / дата -->
-<div class="card__aside card__aside--vertical">
-    <div class="card__aside-layout m-b">
-        <!-- Метрики (динамические по типу) -->
-        <div
-            class="badge badge--xl badge--white"
-            style="gap: 0.5rem"
-            *ngFor="let stat of getCounts()"
-        >
-            {{ stat.label | transloco }}
-            <div class="count text--400">{{ stat.value }}</div>
-        </div>
-
-        <!-- Кнопка мониторинга -->
-        @if (shouldShowMonitoringButton()) {
-            <button
-                class="button button--secondary-gray"
-                [class.button--allert]="collection().monitor"
-                (click)="$event.stopPropagation(); collection().monitor ? monitoringDisabled.emit() : monitoringCreated.emit()"
-            >
-                <div class="button__icon icon">
-                    <app-svg-icon
-                        [icon]="collection().monitor ? 'icon-eye-off' : 'icon-eye'"
-                    ></app-svg-icon>
-                </div>
-                <div class="button__name">
-                    {{
-                        collection().monitor
-                            ? ('accounts.end' | transloco)
-                            : ('accounts.monitoring' | transloco)
-                    }}
-                </div>
-            </button>
-        }
+<!-- Actions Section -->
+<div class="card__actions">
+    <div class="card__actions-top">
+        <button class="button button--secondary-gray button--icon" (click)="$event.stopPropagation()">
+            <app-svg-icon [size]="'large'" icon="icon-info-circle"></app-svg-icon>
+        </button>
+        <button class="button button--secondary-gray button--icon" (click)="$event.stopPropagation()">
+            <app-svg-icon [size]="'large'" icon="icon-dots-vertical"></app-svg-icon>
+        </button>
     </div>
 
-    <!-- Дата последнего сбора -->
-    <div class="card__aside-bottom">
-        @if (collection().lastCollectedAt) {
-            <div class="group group--vertical group--xs">
-                <div class="text text--tetriary text-400">
-                    {{ 'accounts.lastCollectionDate' | transloco }}
-                </div>
-                <div class="text">
-                    {{ collection().lastCollectedAt | date: 'dd.MM.yyyy HH:mm:ss' }}
-                </div>
-            </div>
-        }
+    <div class="card__actions-bottom">
+        <div class="card__date-group">
+            <span class="card__date-label">{{ 'accounts.collectionDate' | transloco }}</span>
+            <span class="card__date-value">
+                {{ (collection().firstCollectedAt || collection().lastCollectedAt) | date: 'dd.MM.yyyy' }}
+            </span>
+        </div>
+        <div class="card__date-group">
+            <span class="card__date-label">{{ 'accounts.lastPostTs' | transloco }}</span>
+            <span class="card__date-value">
+                <!-- Future field: lastPostTs -->
+                -
+            </span>
+        </div>
     </div>
 </div>

@@ -63,7 +63,7 @@ export class AccountComponent {
         this.headerService.setTitle('accounts.account');
         this.headerService.isNavButtonsVisible = true;
         this.headerService.setBackFunction(() => {
-            this.router.navigate(['/account']);
+            this.router.navigate(['/collections/accounts']);
         });
         this.facadeResultService.bindingList$.pipe(
             takeUntil(this.destroyed)

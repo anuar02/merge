@@ -92,6 +92,6 @@ export class TableCardComponent {
     }
 
     public onAvatarClick(): void {
-        this.router.navigate(['account', 'card', this.account().id]);
+        this.router.navigate(['collections/accounts', this.account().id]);
     }
 }

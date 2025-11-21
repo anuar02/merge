@@ -3,8 +3,8 @@ import { provideStates } from '@ngxs/store';
 
 import { CollectionsState } from './store/collections.state';
 import { FacadeCollectionsService } from './store/facade-collections.service';
-import {CollectionsApiService} from "./shared/api/api.service";
-import {CollectionFilterService} from "./shared/filter/filter.service";
+import { CollectionsApiService } from "./shared/api/api.service";
+import { CollectionFilterService } from "./shared/filter/filter.service";
 
 export const routes: Routes = [
     {
@@ -19,18 +19,45 @@ export const routes: Routes = [
         children: [
             {
                 path: 'groups',
-                loadComponent: () => import('./collection-list/collection-list.component').then(m => m.CollectionListComponent),
-                data: { collectionType: 'GROUP' }
+                children: [
+                    {
+                        path: '',
+                        loadComponent: () => import('./collection-list/collection-list.component').then(m => m.CollectionListComponent),
+                        data: { collectionType: 'GROUP' }
+                    },
+                    {
+                        path: '',
+                        loadChildren: () => import('../group/routes').then(m => m.routes)
+                    }
+                ]
             },
             {
                 path: 'accounts',
-                loadComponent: () => import('./collection-list/collection-list.component').then(m => m.CollectionListComponent),
-                data: { collectionType: 'ACCOUNT' }
+                children: [
+                    {
+                        path: '',
+                        loadComponent: () => import('./collection-list/collection-list.component').then(m => m.CollectionListComponent),
+                        data: { collectionType: 'ACCOUNT' }
+                    },
+                    {
+                        path: '',
+                        loadChildren: () => import('../account/routes').then(m => m.routes)
+                    }
+                ]
             },
             {
                 path: 'bots',
-                loadComponent: () => import('./collection-list/collection-list.component').then(m => m.CollectionListComponent),
-                data: { collectionType: 'BOT' }
+                children: [
+                    {
+                        path: '',
+                        loadComponent: () => import('./collection-list/collection-list.component').then(m => m.CollectionListComponent),
+                        data: { collectionType: 'BOT' }
+                    },
+                    {
+                        path: '',
+                        loadChildren: () => import('../bot/routes').then(m => m.routes)
+                    }
+                ]
             },
             {
                 path: '',

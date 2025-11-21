@@ -274,7 +274,7 @@ export class GroupListComponent implements OnInit {
     }
 
     public goToGroupDetails(id: string): void {
-        this.router.navigate(['group', 'card', id]);
+        this.router.navigate(['collections/groups', id]);
     }
 
     public openAddOpenGroupModal(): void {

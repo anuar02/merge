@@ -3,8 +3,8 @@ import {
     computed,
     EventEmitter,
     inject,
-    Output, signal,
-    Signal,
+    Output,
+    input,
 } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { Router } from '@angular/router';
@@ -12,13 +12,13 @@ import { TranslocoPipe } from '@jsverse/transloco';
 
 import { SvgIconComponent } from '../../../../../shared/components/svg-icon/svg-icon.component';
 import { PlatformIconComponent } from '../../../../../shared/components/platform-icon/platform-icon.component';
-import { CheckboxComponent } from '../../../../../shared/components/checkbox/checkbox.component';
+import { BadgeComponent } from "../../../../../shared/components/badge/badge.component";
 
 import { CollectionEntity, CollectionType } from '../../models/collection.entity';
 import { environment } from '../../../../../../environments/environment';
 import { COLLECT_STATUS_MAP } from '../../../base/utils/collect-status-map';
-import { input } from '@angular/core';
-import {BadgeComponent} from "../../../../../shared/components/badge/badge.component";
+import {TableColumn} from "../../../../../shared/components-new/table/table";
+import {LifeStatusPipe} from "../../../../../shared/pipes/life-status-pipe";
 
 export interface Platform {
     id: number;
@@ -35,10 +35,11 @@ export interface Platform {
         TranslocoPipe,
         SvgIconComponent,
         PlatformIconComponent,
-        CheckboxComponent,
         BadgeComponent,
+        LifeStatusPipe,
     ],
     templateUrl: 'card.component.html',
+    styleUrls: ['card.component.scss'],
     host: {
         class: 'card',
         '(click)': '$event.stopPropagation(); onClick()',
@@ -52,11 +53,6 @@ export class CollectionCardComponent {
     public platforms = input<Platform[]>([]);
     public showMonitoring = input<boolean>(true);
     public bindingList = input<any[]>([]);
-
-    // для мультиселекта, если нужно — можно не использовать
-    public checkbox = input<boolean>(false);
-    public index = input<number>(0);
-    public selectedRows = input<number[]>([]);
 
     // ==== Outputs ====
     @Output() clicked = new EventEmitter<CollectionEntity>();
@@ -76,24 +72,21 @@ export class CollectionCardComponent {
         );
     });
 
-    public tags: Signal<string[]> = computed(() => {
-        return this.collection()?.contentTag?.split(' ') || [];
+    public tags = computed(() => {
+        const contentTag = this.collection()?.contentTag;
+        if (!contentTag) return [];
+        return contentTag.split(' ').filter(tag => tag.trim().length > 0);
     });
 
-    avatarLoaded = signal(false);
-
-    onAvatarLoad() {
-        this.avatarLoaded.set(true);
+    public getPhotoUrl(photo: string, type: CollectionType): string {
+        if (!photo || photo.startsWith('blob:') || photo.startsWith('assets/') || photo.startsWith('http')) {
+            return photo;
+        }
+        return `${environment.apiUrl}/resources/media?path=${encodeURIComponent(photo)}`;
     }
 
-    onAvatarError() {
-        this.avatarLoaded.set(true);
-    }
-
-    get photoUrl(): string {
-        const photo = this.collection().photo;
-        console.log(`resources/media?path=${encodeURIComponent(photo)}`)
-        return `resources/media?path=${encodeURIComponent(photo)}`;
+    public onAvatarClick(): void {
+        this.router.navigate(this.getDetailRoute());
     }
 
     public collectStatus = computed(() => {
@@ -116,65 +109,5 @@ export class CollectionCardComponent {
         this.clicked.emit(this.collection());
     }
 
-    public onAvatarClick(): void {
-        this.router.navigate(this.getDetailRoute());
-    }
-
-    // ==== Display helpers ====
-
-    public shouldShowMonitoringButton(): boolean {
-        const c = this.collection();
-        if (!this.showMonitoring()) return false;
-        if (!this.isOnline) return false;
-
-        // логика как у тебя: скрывать мониторинг для TELEGRAM/WHATSAPP MESSENGER
-        if (
-            c.sourceType === 'MESSENGER' &&
-            (c.platform === 'TELEGRAM' || c.platform === 'WHATSAPP')
-        ) {
-            return false;
-        }
-
-        return true;
-    }
-
-    // Общий набор метрик (отличается по типам)
-    public getCounts(): { label: string; value: number }[] {
-        const c = this.collection();
-        const counts: { label: string; value: number }[] = [];
-
-        if (c.collectionType === 'GROUP' || c.collectionType === 'ACCOUNT') {
-            if (typeof c.groupCount === 'number') {
-                counts.push({
-                    label: 'accounts.groupCount',
-                    value: c.groupCount,
-                });
-            }
-            counts.push({
-                label: 'accounts.publicationsCount',
-                value: c.postCount,
-            });
-            if (typeof c.subscriberCount === 'number') {
-                counts.push({
-                    label: 'accounts.subscribers',
-                    value: c.subscriberCount,
-                });
-            }
-        }
-
-        if (c.collectionType === 'BOT') {
-            if (typeof c.memberCount === 'number') {
-                counts.push({
-                    label: 'accounts.members',
-                    value: c.memberCount,
-                });
-            }
-            counts.push({
-                label: 'accounts.publicationsCount',
-                value: c.postCount,
-            });
-        }
-
-        return counts;
-    }
+    protected readonly event = event;
 }

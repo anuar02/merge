@@ -57,9 +57,9 @@ export class GroupComponent {
         const hiddenRouteData = window.history.state;
         this.headerService.setBackFunction(() => {            
             if (Object.hasOwn(hiddenRouteData, 'module') && hiddenRouteData['module'] === 'BOTS' && hiddenRouteData['id']) {
-                this.router.navigate(['bot', 'card', hiddenRouteData['id']]);
+                this.router.navigate(['collections/bot', hiddenRouteData['id']]);
             } else {
-                this.router.navigate(['group']);
+                this.router.navigate(['collections/groups']);
             }
         });
     }

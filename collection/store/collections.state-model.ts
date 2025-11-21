@@ -35,7 +35,7 @@ export class CollectionsStateModel {
         };
         this.accountsQueryParams = {
             page: 0,
-            size: 50,
+            size: 10,
             sort: 'lastCollectedAt,desc'
         };
         this.botsQueryParams = {

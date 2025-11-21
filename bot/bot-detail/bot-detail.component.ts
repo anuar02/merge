@@ -131,7 +131,7 @@ export class BotDetailComponent implements OnInit, OnDestroy {
         this.headerService.setTitle('bots.bots');
         this.headerService.isNavButtonsVisible = true;
         this.headerService.setBackFunction(() => {
-            this.router.navigate(['bot']);
+            this.router.navigate(['collections/bot']);
         });
 
         const groupNameColumn = this.columns.find(v => v.key === 'groupName');
@@ -239,6 +239,6 @@ export class BotDetailComponent implements OnInit, OnDestroy {
     }
 
     public goToGroupDetails(id: string): void {
-        this.router.navigate(['group', 'card', id], { state: { module: 'BOTS', id: this.botInfo().id } });
+        this.router.navigate(['collections/groups', id], { state: { module: 'BOTS', id: this.botInfo().id } });
     }
 }

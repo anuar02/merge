@@ -62,6 +62,7 @@ export interface CollectionEntity {
     url?: string;
     title?: string;
     accountId?: string;
+    groupName?: string;
 
     // Folder
     folderId?: string;
