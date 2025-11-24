@@ -1,0 +1,140 @@
+<div class="member-card__container" (click)="onCardClick($event)">
+    <!-- Avatar -->
+    <div class="member-card__avatar">
+        <div class="avatar avatar--group">
+            <div class="avatar__wrapper">
+                <img
+                    class="avatar__image"
+                    [src]="getPhotoUrl(member().photo)"
+                    [alt]="member().username || member().title || 'Avatar'"
+                >
+                @if (platformId() > 0 && platforms.length > 0) {
+                    <app-platform-icon
+                        [platform]="platformId()"
+                        [platformList]="platforms"
+                    ></app-platform-icon>
+                }
+            </div>
+        </div>
+    </div>
+
+    <!-- Info Section -->
+    <div class="member-card__info">
+        <!-- Primary Row: Name, Username, Badges -->
+        <div class="member-card__row member-card__row--primary">
+            <span class="member-card__name">
+                {{ member().title || member().username || member().accountId }}
+            </span>
+
+            @if (member().username) {
+                <button class="member-card__link" (click)="$event.stopPropagation()">
+                    {{ '@' + member().username }}
+                </button>
+            }
+
+            <div class="member-card__badges">
+                @if (member().verified) {
+                    <app-badge
+                        color="default"
+                        [label]="'common.verified' | transloco"
+                        [prefixIcon]="'icon-check'"
+                    ></app-badge>
+                }
+
+                @if (collectStatus()) {
+                    <app-badge
+                        [iconSize]="'sm'"
+                        [label]="collectStatus()!.label | transloco"
+                        [prefixIcon]="'icon-dot'"
+                    ></app-badge>
+                }
+
+                @if (isNotMember()) {
+                    <app-badge
+                        color="default"
+                        [label]="'members.notMember' | transloco"
+                        [prefixIcon]="'icon-user-x'"
+                    ></app-badge>
+                }
+
+                <app-badge
+                    [color]="'default'"
+                    [label]="'common.tooltip' | transloco"
+                ></app-badge>
+            </div>
+        </div>
+
+        <!-- Phone Numbers Row -->
+        @if (member().accountId) {
+            <div class="member-card__row member-card__row--phones">
+                <button class="member-card__link" (click)="$event.stopPropagation()">
+                    {{ member().accountId }}
+                </button>
+            </div>
+        }
+
+        <!-- Stats Row -->
+        <div class="member-card__row member-card__row--stats">
+            <div class="member-card__stat">
+                <span class="member-card__stat-value">{{ member().groupCount }}</span>
+                <span class="member-card__stat-delta">+4</span>
+                <span class="member-card__stat-label">{{ 'common.groups' | transloco }}</span>
+            </div>
+
+            <div class="member-card__stat">
+                <span class="member-card__stat-value">{{ member().postCount }}</span>
+                <span class="member-card__stat-delta">+4</span>
+                <span class="member-card__stat-label">{{ 'common.posts' | transloco }}</span>
+            </div>
+
+            <div class="member-card__stat">
+                <span class="member-card__stat-value">0</span>
+                <span class="member-card__stat-delta">+0</span>
+                <span class="member-card__stat-label">{{ 'common.stories' | transloco }}</span>
+            </div>
+        </div>
+
+        <!-- Tags Row -->
+        @if (tags().length > 0) {
+            <div class="member-card__row member-card__row--tags">
+                @for (tag of tags(); track tag) {
+                    <app-badge
+                        [color]="'default'"
+                        [label]="tag"
+                    ></app-badge>
+                }
+            </div>
+        }
+    </div>
+
+    <!-- Actions Section -->
+    <div class="member-card__actions">
+        <div class="member-card__actions-top">
+            <button 
+                class="button button--secondary button--icon-only"
+                (click)="onInfoClick($event)"
+            >
+                <app-svg-icon [icon]="'icon-info-circle'"></app-svg-icon>
+            </button>
+
+            <button 
+                class="button button--secondary button--icon-only"
+                (click)="onMoreClick($event)"
+            >
+                <app-svg-icon [icon]="'icon-dots-vertical'"></app-svg-icon>
+            </button>
+        </div>
+
+        <div class="member-card__actions-bottom">
+            <div class="member-card__date-group">
+                <span class="member-card__date-label">{{ 'common.collectDate' | transloco }}</span>
+                <span class="member-card__date-value">{{ formatDate(member().firstCollectedAt) }}</span>
+            </div>
+
+            <div class="member-card__date-group">
+                <span class="member-card__date-label">{{ 'common.publishDate' | transloco }}</span>
+                <span class="member-card__date-value">{{ formatDate(member().createdAt) }}</span>
+            </div>
+        </div>
+    </div>
+</div>

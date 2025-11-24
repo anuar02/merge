@@ -1,220 +1,82 @@
-import {Component, computed, DestroyRef, inject, OnInit, signal} from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import {CommonModule} from '@angular/common';
-import {
-    PaginationPanelComponent
-} from '../../../../../../shared/components/pagination-panel/pagination-panel.component';
-import {SortingComponent} from '../../../../../../shared/components/sorting/sorting.component';
-import {SortingItem} from '../../../../../../shared/components/sorting/sorting';
-import {NotFoundComponent} from '../../../../../../shared/components/not-found/not-found.component';
-import {SearchBarComponent} from '../../../../../../shared/components/search-bar/search-bar.component';
-import {ViewSwitchComponent} from '../../../../../../shared/components/view-switch/view-switch.component';
-import {ViewSwitch} from '../../../../../../shared/components/view-switch/view-switch';
-import {TableComponent} from '../../../../../../shared/components/data-table/components/table/table.component';
-import {TableCardComponent} from '../../../../account/shared/table-card/table-card.component';
-import {getPlatforms} from '../../../../mocks/allowed-platforms.mock';
-import {Column} from '../../../../../../shared/components/data-table/components/table/table';
-import {FacadeAccountsService} from '../../../../account/store/facade-accounts.service';
-import {FilterFormService} from '../../../../account/account-list/components/filter/filter-form.service';
-import {PageParams} from '../../../../../../shared/components/pagination-panel/pagination-panel';
-import {ActivatedRoute, RouterModule} from '@angular/router';
-import {TranslocoPipe} from '@jsverse/transloco';
-import { ModalService } from '../../../../../../shared/components/modal/modal.service';
-import { MonitoringModalComponent } from '../../../../base/ui/monitoring-modal/monitoring-modal.component';
-import { NotificationsService } from '../../../../../../shared/services/notifications.service';
-import { MONITORING_API_TOKEN } from '../../../../base/ui/monitoring-modal/monitoring-api.token';
-import { AccountApiService } from '../../../../account/shared/api/group-api.service';
+import { Component, computed, HostBinding, inject, Signal } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { TranslocoPipe } from '@jsverse/transloco';
+
+import { MemberCardComponent, MemberCardData } from './components/member-card/member-card.component';
+import { SvgIconComponent } from '../../../../../../shared/components/svg-icon/svg-icon.component';
+import {BasePageableListComponent} from "../../../../base/base-pageable-list/base-pageable-list.component";
+import {FacadeAccountsService} from "../../../../account/store/facade-accounts.service";
 
 @Component({
-    selector: 'app-members',
-    imports: [
-        CommonModule,
-        PaginationPanelComponent,
-        SortingComponent,
-        NotFoundComponent,
-        SearchBarComponent,
-        ViewSwitchComponent,
-        TableComponent,
-        TableCardComponent,
-        RouterModule,
-        TranslocoPipe,
-    // FilterComponent
-    ],
-    templateUrl: './members.component.html',
-    styleUrl: './members.component.scss',
-    providers: [
-        FilterFormService,
-        {
-            provide: MONITORING_API_TOKEN,
-            useClass: AccountApiService,
-        }
-    ]
+  selector: 'app-members',
+  standalone: true,
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    TranslocoPipe,
+    MemberCardComponent,
+    SvgIconComponent,
+    BasePageableListComponent
+  ],
+  templateUrl: './members.component.html',
+  styleUrl: './members.component.scss'
 })
-export class MembersComponent implements OnInit {
-    public sortingItems: SortingItem[] = [
-        {
-            label: 'common.firstCollectedDateSortLabel',
-            value: 'firstCollectedAt',
-            icon: ''
-        },
-        {
-            label: 'common.lastCollectedDateSortLabel',
-            value: 'lastCollectedAt',
-            icon: ''
-        },
-        {
-            label: 'common.fullNameSortLabel',
-            value: 'title',
-            icon: '',
-            labelDesc: 'common.sortDesc',
-            labelAsc: 'common.sortAsc'
-        },
-        {
-            label: 'common.usernameSortLabel',
-            value: 'username',
-            icon: '',
-            labelDesc: 'common.sortDesc',
-            labelAsc: 'common.sortAsc'
-        }
-    ];
+export class MembersComponent {
+  @HostBinding('class') class = 'members-page';
 
-    public columns: Column[] = [
-    {
-        key: 'name',
-        label: 'common.name',
-        type: 'account',
-        style: 'width: 30rem',
-        data: {
-            imgSize: 'lg',
-            username: 'username',
-            url: 'url',
-            id: 'searchValue',
-            platform: 'platform',
-            type: 'collections'
-        },
-        sticky: true,
-    } as Column,
-    new Column('groupCount', 'accounts.groups'),
-    new Column('postCount', 'accounts.publicationsCount'),
-    ];
+  private facadeAccountsService = inject(FacadeAccountsService);
 
-    public dataView = signal<ViewSwitch>('list');
-    public allowedPlatforms = signal(getPlatforms());
+  searchControl = new FormControl('');
+  selectedView: 'table' | 'cards' = 'cards';
+  selectAll = false;
 
-    private facadeStoreService = inject(FacadeAccountsService);
-    private modalService = inject(ModalService);
-    private notificationService = inject(NotificationsService);
-    private destroyRef = inject(DestroyRef);
-    private monitoringApi = inject(MONITORING_API_TOKEN);
+  members: Signal<MemberCardData[]> = computed(() => {
+    return this.facadeAccountsService.accounts() as MemberCardData[];
+  });
+  //
+  // totalMembers: Signal<number> = computed(() => {
+  //   return this.facadeAccountsService.total();
+  // });
 
-    public pageInfo = this.facadeStoreService.pageInfo;
-    public isLoading = this.facadeStoreService.isLoading;
-    public accounts = this.facadeStoreService.accounts;
-    public queryParams = this.facadeStoreService.queryParams;
+  isLoading: Signal<boolean> = this.facadeAccountsService.isLoading;
 
-    public accountsMapped = computed(() => {
-        return this.accounts().map((account) => {
-            return {
-                ...account,
-                platform: this.allowedPlatforms().find((p) => p?.name?.toLowerCase() === account?.platform?.toLowerCase())?.id || 0
-            };
-        });
-    })
+  toggleView(view: 'table' | 'cards'): void {
+    this.selectedView = view;
+  }
 
-    public filterForm = inject(FilterFormService).form;
-    private activatedRoute = inject(ActivatedRoute);
+  toggleSelectAll(): void {
+    this.selectAll = !this.selectAll;
+  }
 
-    ngOnInit() {
-        this.getAccounts();
-    }
+  onMemberCardClick(member: MemberCardData): void {
+    console.log('Card clicked:', member);
+    // TODO: Navigate to member detail page
+  }
 
-    getAccounts() {
-        this.facadeStoreService.getAccounts({
-            ...this.filterForm.getRawValue(),
-            subject: {
-                subjectId: this.activatedRoute.parent?.snapshot.params['id'] ?? null,
-                subjectType: 'GROUP',
-            }
-        });
-    }
+  onMemberInfoClick(member: MemberCardData): void {
+    console.log('Info clicked:', member);
+    // TODO: Show member info modal
+  }
 
-    onViewChange(event: ViewSwitch): void {
-        this.dataView.set(event);
-    }
+  onMemberMoreClick(member: MemberCardData): void {
+    console.log('More clicked:', member);
+    // TODO: Show actions menu
+  }
 
-    handleSearch(searchText: string): void {
-        this.filterForm.controls.search.setValue(searchText);
-        this.facadeStoreService.setQueryParams({
-            page: 0,
-            size: this.pageInfo().pageParams.size,
-            sort: this.pageInfo().pageParams.sort,
-        });
-        this.getAccounts();
-    }
+  onSearch(): void {
+    const searchValue = this.searchControl.value;
+    console.log('Search:', searchValue);
+    // TODO: Implement search
+  }
 
-    handleChangePage(target: EventTarget | null | number) {
-        const newPage = typeof target === 'number' ? target : Number((target as HTMLSelectElement)?.value);
-        if (newPage < 0 || newPage >= this.pageInfo().totalPages) return;
-        const nextPageParams = new PageParams(newPage, this.pageInfo().pageParams.size);
-        this.handleChangePageParams(nextPageParams);
-    }
+  onFilterClick(): void {
+    console.log('Filter clicked');
+    // TODO: Show filter modal
+  }
 
-    handleItemsPerPageChange(target: EventTarget | null | number) {
-        const perPage = typeof target === 'number' ? target : Number((target as HTMLSelectElement)?.value);
-        const newPageParams = new PageParams(0, perPage);
-        this.handleChangePageParams(newPageParams);
-    }
-
-    handleChangePageParams(pageParams: PageParams): void {
-        this.facadeStoreService.setQueryParams({
-            ...this.queryParams(),
-            page: pageParams.page,
-            size: pageParams.size,
-        });
-        this.getAccounts();
-    }
-
-    onSortingChange(sortingParams: string): void {
-        this.facadeStoreService.setQueryParams({
-            ...this.queryParams(),
-            sort: sortingParams,
-        });
-        this.getAccounts();
-    }
-
-    enableMonitoring(accountId: string): void {
-        this.modalService.showModal(MonitoringModalComponent, {
-            allowOverlayClick: true,
-            data: {
-                accountId,
-            },
-            whenClosed: (monitoringDetails) => {
-                this.monitoringApi.createMonitoring(accountId, monitoringDetails).pipe(
-                    takeUntilDestroyed(this.destroyRef),
-                ).subscribe(() => {
-                    this.notificationService.addNotification(
-                        'success',
-                        'accounts.monitoringCreatedSuccess',
-                        ''
-                    );
-                    this.updateGeneralInfo();
-                })
-            }
-        });
-    }
-
-    disableMonitoring(accountId: string): void {
-        this.monitoringApi.removeMonitoring(accountId).pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
-            this.notificationService.addNotification(
-                'success',
-                'accounts.monitoringDeletedSuccess',
-                ''
-            );
-            this.updateGeneralInfo();
-        });
-    }
-
-    updateGeneralInfo(): void {
-        this.getAccounts();
-    }
+  onSortClick(): void {
+    console.log('Sort clicked');
+    // TODO: Show sort options
+  }
 }

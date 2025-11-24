@@ -1,0 +1,125 @@
+<div class="group-header-card">
+    <!-- Avatar -->
+    <div class="group-header-card__avatar">
+        <div class="avatar avatar--group">
+            <div class="avatar__wrapper">
+                <img
+                    class="avatar__image"
+                    [src]="getPhotoUrl(group().photo)"
+                    [alt]="group().title"
+                >
+                @if (platformId() > 0 && platforms.length > 0) {
+                    <app-platform-icon
+                        [platform]="platformId()"
+                        [platformList]="platforms"
+                    ></app-platform-icon>
+                }
+            </div>
+        </div>
+    </div>
+
+    <!-- Info Section -->
+    <div class="group-header-card__info">
+        <!-- Primary Row: Name, Username, Badges -->
+        <div class="group-header-card__row group-header-card__row--primary">
+            <span class="group-header-card__name">
+                {{ group().title }}
+            </span>
+
+            @if (group().username) {
+                <button class="group-header-card__link" (click)="$event.stopPropagation()">
+                    {{ '@' + group().username }}
+                </button>
+            }
+
+            <div class="group-header-card__badges">
+                @if (group().verified) {
+                    <app-badge
+                        color="default"
+                        [label]="'common.verified' | transloco"
+                        [prefixIcon]="'icon-check'"
+                    ></app-badge>
+                }
+
+                @if (collectStatus()) {
+                    <app-badge
+                        [color]="collectStatus()!.color"
+                        [iconColor]="collectStatus()!.iconColor"
+                        [iconSize]="'sm'"
+                        [label]="collectStatus()!.label | transloco"
+                        [prefixIcon]="'icon-dot'"
+                    ></app-badge>
+                }
+
+                <app-badge
+                    color="info"
+                    [label]="'common.tooltip' | transloco"
+                ></app-badge>
+            </div>
+        </div>
+
+        <!-- Stats Row -->
+        <div class="group-header-card__row group-header-card__row--stats">
+            <div class="group-header-card__stat">
+                <span class="group-header-card__stat-value">{{ group().subscriberCount }}</span>
+                <span class="group-header-card__stat-delta">+4</span>
+                <span class="group-header-card__stat-label">{{ 'common.participants' | transloco }}</span>
+            </div>
+
+            <div class="group-header-card__stat">
+                <span class="group-header-card__stat-value">{{ group().postCount }}</span>
+                <span class="group-header-card__stat-delta">+4</span>
+                <span class="group-header-card__stat-label">{{ 'common.posts' | transloco }}</span>
+            </div>
+
+            <div class="group-header-card__stat">
+                <span class="group-header-card__stat-value">3</span>
+                <span class="group-header-card__stat-delta">+4</span>
+                <span class="group-header-card__stat-label">{{ 'common.avatars' | transloco }}</span>
+            </div>
+        </div>
+
+        <!-- Tags Row -->
+        @if (tags().length > 0) {
+            <div class="group-header-card__row group-header-card__row--tags">
+                @for (tag of tags(); track tag) {
+                    <app-badge
+                        color="gray"
+                        [label]="tag"
+                    ></app-badge>
+                }
+            </div>
+        }
+    </div>
+
+    <!-- Actions Section -->
+    <div class="group-header-card__actions">
+        <div class="group-header-card__actions-top">
+            <button 
+                class="button button--secondary button--icon-only"
+                (click)="onInfoClick($event)"
+            >
+                <app-svg-icon name="icon-info-circle" size="md"></app-svg-icon>
+            </button>
+
+            <button 
+                class="button button--secondary button--icon-only"
+                (click)="onMoreClick($event)"
+            >
+                <app-svg-icon name="icon-dots-vertical" size="md"></app-svg-icon>
+            </button>
+        </div>
+
+        <div class="group-header-card__actions-bottom">
+            <div class="group-header-card__date-group">
+                <span class="group-header-card__date-label">{{ 'common.collectDate' | transloco }}</span>
+                <span class="group-header-card__date-value">{{ formatDate(group().lastCollection) }}</span>
+            </div>
+
+            <div class="group-header-card__date-group">
+                <span class="group-header-card__date-label">{{ 'common.publishDate' | transloco }}</span>
+                <span class="group-header-card__date-value">{{ formatDate(group().createdAt) }}</span>
+            </div>
+        </div>
+    </div>
+</div>

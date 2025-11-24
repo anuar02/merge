@@ -1,0 +1,72 @@
+<div class="publication-message">
+    <!-- Avatar -->
+    <div class="publication-message__avatar">
+        <img 
+            [src]="avatarUrl()" 
+            [alt]="message().username"
+            class="avatar__image"
+        >
+    </div>
+
+    <!-- Content -->
+    <div class="publication-message__content">
+        <!-- Name and Time -->
+        <div class="publication-message__header">
+            <span class="publication-message__username">{{ message().username }}</span>
+            <span class="publication-message__time">{{ formatDateTime(message().createdAt) }}</span>
+        </div>
+
+        <!-- Message Body -->
+        @if (message().text) {
+            <div class="publication-message__body">
+                <p class="publication-message__text">{{ message().text }}</p>
+            </div>
+        }
+
+        <!-- Attachments -->
+        @if (hasAttachments()) {
+            <div class="publication-message__attachments">
+                @for (attachment of message().attachPaths; track attachment) {
+                    @switch (getFileType(attachment)) {
+                        @case ('image') {
+                            <div class="publication-message__attachment publication-message__attachment--image">
+                                <img [src]="attachment" [alt]="getFileName(attachment)">
+                            </div>
+                        }
+                        @case ('audio') {
+                            <div class="publication-message__attachment publication-message__attachment--audio">
+                                <div class="audio-player">
+                                    <button class="audio-player__play">
+                                        <app-svg-icon [icon]="'icon-play-circle'" [size]="'large'"></app-svg-icon>
+                                    </button>
+                                    <div class="audio-player__info">
+                                        <div class="audio-player__progress">
+                                            <div class="audio-player__progress-bar"></div>
+                                        </div>
+                                        <span class="audio-player__time">00:14</span>
+                                    </div>
+                                </div>
+                                <button class="publication-message__convert-link">
+                                    {{ 'publications.convertToText' | transloco }}
+                                </button>
+                            </div>
+                        }
+                        @case ('document') {
+                            <div class="publication-message__attachment publication-message__attachment--document">
+                                <div class="file-preview">
+                                    <div class="file-preview__icon">
+                                        <app-svg-icon [icon]="'icon-file'" [size]="'large'"></app-svg-icon>
+                                    </div>
+                                    <div class="file-preview__info">
+                                        <span class="file-preview__name">{{ getFileName(attachment) }}</span>
+                                        <span class="file-preview__size">{{ getFileSize(attachment) }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    }
+                }
+            </div>
+        }
+    </div>
+</div>

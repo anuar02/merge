@@ -27,7 +27,7 @@ export const routes: Routes = [
             },
             {
                 path: 'members',
-                loadComponent: () => import('./group-detail/pages/members/members.component').then(m => m.MembersComponent),
+                loadComponent: () => import('./group-detail/pages/members-publications/members-publications.component').then(m => m.MembersPublicationsComponent),
                 providers: [
                     AccountListApi,
                     FacadeAccountsService,
@@ -36,7 +36,12 @@ export const routes: Routes = [
             },
             {
                 path: 'posts',
-                loadComponent: () => import('./group-detail/pages/publications/publications.component').then(m => m.PublicationsComponent),
+                loadComponent: () => import('./group-detail/pages/members-publications/members-publications.component').then(m => m.MembersPublicationsComponent),
+                providers: [
+                    AccountListApi,
+                    FacadeAccountsService,
+                    provideStates([AccountsState])
+                ]
             },
             {
                 path: '',

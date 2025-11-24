@@ -36,6 +36,9 @@ export interface AccountEntity {
     title: string;
     accountId: string;
     collectStatus: CollectStatus;
+    firstCollectedAt?: string;
+    verified?: boolean;
+    additionMethod?: any;
 }
 
 export interface RegularPriod {

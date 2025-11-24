@@ -1,0 +1,183 @@
+@use '../../../../../../assets/scss/settings' as *;
+@use '../../../../../../assets/scss/util/rem-mixin' as *;
+
+.group-header-card {
+    display: flex;
+    gap: rem(24px);
+    align-items: flex-start;
+    padding: rem($spacing-3xl);
+    background: var(--colors-background-bg-primary, #ffffff);
+    border: 1px solid var(--colors-border-border-secondary, #e4e7ec);
+    border-radius: var(--radius-md, 8px);
+    height: rem(144px);
+}
+
+// Avatar Section
+.group-header-card__avatar {
+    width: rem(48px);
+    height: rem(48px);
+    flex-shrink: 0;
+
+    .avatar__wrapper {
+        position: relative;
+        width: 100%;
+        height: 100%;
+    }
+
+    .avatar__image {
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        object-fit: cover;
+    }
+}
+
+// Info Section
+.group-header-card__info {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: rem(12px);
+}
+
+.group-header-card__row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+
+    &--primary {
+        gap: rem(8px);
+    }
+
+    &--stats {
+        gap: rem(16px);
+    }
+
+    &--tags {
+        gap: rem(8px);
+    }
+}
+
+.group-header-card__name {
+    font-family: var(--font-family-font-family-body, 'Inter', sans-serif);
+    font-size: rem(16px);
+    font-weight: 600;
+    line-height: rem(24px);
+    color: var(--colors-text-text-primary-900, #101828);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.group-header-card__link {
+    display: inline-flex;
+    align-items: center;
+    gap: rem(6px);
+    padding: 0;
+    background: none;
+    border: none;
+    font-family: var(--font-family-font-family-body, 'Inter', sans-serif);
+    font-size: rem(14px);
+    font-weight: 600;
+    line-height: rem(20px);
+    color: var(--component-colors-components-buttons-tertiary-color-button-tertiary-color-fg, #0c75aa);
+    cursor: pointer;
+    white-space: nowrap;
+
+    &:hover {
+        text-decoration: underline;
+    }
+}
+
+.group-header-card__badges {
+    display: flex;
+    gap: rem(8px);
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+// Stats
+.group-header-card__stat {
+    display: inline-flex;
+    align-items: baseline;
+    gap: rem(4px);
+    font-size: rem(14px);
+    line-height: rem(20px);
+    white-space: nowrap;
+}
+
+.group-header-card__stat-value {
+    font-family: var(--font-family-font-family-body, 'Inter', sans-serif);
+    font-weight: 600;
+    color: var(--colors-text-text-primary-900, #101828);
+}
+
+.group-header-card__stat-delta {
+    font-family: var(--font-family-font-family-body, 'Inter', sans-serif);
+    font-weight: 600;
+    color: var(--colors-text-text-secondary-700, #344054);
+}
+
+.group-header-card__stat-label {
+    font-family: var(--font-family-font-family-body, 'Inter', sans-serif);
+    font-weight: 400;
+    color: var(--colors-text-text-tertiary-600, #475467);
+}
+
+// Actions Section
+.group-header-card__actions {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: rem($spacing-xl);
+    flex-shrink: 0;
+    height: 100%;
+    width: rem(221px);
+}
+
+.group-header-card__actions-top {
+    display: flex;
+    gap: rem(12px);
+    align-items: center;
+}
+
+.group-header-card__actions-bottom {
+    display: flex;
+    gap: rem(24px);
+    align-items: flex-start;
+    justify-content: flex-end;
+}
+
+.group-header-card__date-group {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    font-size: rem($text_sm);
+    line-height: rem(20px);
+    white-space: nowrap;
+}
+
+.group-header-card__date-label {
+    font-family: var(--font-family-font-family-body, 'Inter', sans-serif);
+    font-weight: 400;
+    color: var(--colors-text-text-tertiary-600, #475467);
+}
+
+.group-header-card__date-value {
+    font-family: var(--font-family-font-family-body, 'Inter', sans-serif);
+    font-weight: 500;
+    color: var(--colors-text-text-primary-900, #101828);
+}
+
+// Button styles
+.button--icon-only {
+    padding: rem(8px);
+    min-width: unset;
+    width: rem(36px);
+    height: rem(36px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
