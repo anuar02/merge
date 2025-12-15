@@ -1,0 +1,262 @@
+<app-modal-wrap
+    [footer]="{ confirmButtonName: 'button.add', cancelButtonName: 'button.cancel' }"
+    [size]="'collections-adding'"
+    (closeModal)="closeBtn()"
+    (cancelEvent)="onCancel()"
+    (confirmEvent)="onConfirm()"
+>
+    <div modal-header>
+        <div class="featured-icon featured-icon--modern featured-icon--lg">
+            <app-svg-icon icon="icon-users"></app-svg-icon>
+        </div>
+    </div>
+    <div class="modal__body" modal-body>
+        <!-- <div class="spacing spacing--2xl"></div> -->
+        <div class="modal__title">
+            {{ 'accounts.openSourceModal.title' | transloco }}
+        </div>
+        <div class="spacing spacing--2xl"></div>
+        <form class="group group--vertical group--2xl" [formGroup]="formGroup">
+            <div class="group">
+                <div class="group__item">
+                    <label class="radio m-r">
+                        <input
+                            class="radio__control"
+                            type="radio"
+                            value="SOCIAL_NETWORK"
+                            [formControl]="formGroup.controls.sourceType"
+                        >
+                        <div class="radio__label">
+                            {{ 'accounts.socialMedia' | transloco }}
+                        </div>
+                    </label>
+                    <label class="radio">
+                        <input
+                            class="radio__control"
+                            type="radio"
+                            value="MESSENGER"
+                            [formControl]="formGroup.controls.sourceType"
+                        >
+                        <div class="radio__label">
+                            {{ 'accounts.messenger' | transloco }}
+                        </div>
+                    </label>
+                </div>
+            </div>
+            <div class="group">
+                <div class="group__item" style="width: 100%">
+                    <app-select
+                        [options]="platforms()"
+                        [label]="'accounts.platform' | transloco"
+                        [required]="true"
+                        [hasError]="formGroup.controls.platform.invalid && formGroup.controls.platform.touched"
+                        (optionSelected)="formGroup.controls.platform.setValue($event.value)"
+                    ></app-select>
+                    @if (formGroup.controls.platform.invalid && formGroup.controls.platform.touched) {
+                        <div class="text text--sm text--error">
+                            @if (formGroup.controls.platform.hasError('required')) {
+                                <ng-container>
+                                    {{ 'common.fieldRequired' | transloco }}
+                                </ng-container>
+                            }
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <div class="group">
+                <div class="group__item">
+                    <app-select
+                        [ngClass]="formGroup.controls.searchParamType.disabled ? 'disabled' : ''"
+                        [options]="searchParamTypes()"
+                        [label]="'common.identifier' | transloco"
+                        [required]="true"
+                        [selectedOption]="formGroup.controls.searchParamType.value"
+                        (optionSelected)="formGroup.controls.searchParamType.setValue($event.value)"
+                    ></app-select>
+                </div>
+
+                <div class="group__item group__item--expand">
+                    <div class="input">
+                        <div class="input__label">
+                            {{ searchValueLabel() }} <mark>*</mark>
+                        </div>
+                        <div
+                            class="input__container"
+                            [class.input__container--error]="formGroup.controls.searchValue.invalid && this.formGroup.controls.searchValue.touched"
+                        >
+                            <input
+                                type="text"
+                                class="input__control"
+                                [placeholder]="'common.enterData' | transloco"
+                                [formControl]="formGroup.controls.searchValue"
+                            >
+                        </div>
+                        @if (formGroup.controls.searchValue.invalid && formGroup.controls.searchValue.touched) {
+                            <div class="text text--sm text--error">
+                                @if (formGroup.controls.searchValue.hasError('required')) {
+                                    <ng-container>
+                                        {{ 'common.fieldRequired' | transloco }}
+                                    </ng-container>
+                                }
+                            </div>
+                        }
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- <div class="group">
+                <div class="group__item group__item--expand">
+                    <app-select
+                        [options]="contentTopics()"
+                        [label]="'Тематика'"
+                        [required]="true"
+                        (optionSelected)="formGroup.controls.contentTopic.setValue($event.value)"
+                    ></app-select>
+                </div>
+                <div class="group__item group__item--expand">
+                    <div class="group__item group__item--expand">
+                        <div class="input">
+                            <div class="input__label">
+                                Тег <mark>*</mark>
+                            </div>
+                            <div class="input__container">
+                                <input
+                                    type="text"
+                                    class="input__control"
+                                    placeholder="Введите данные"
+                                    [formControl]="formGroup.controls.contentTag"
+                                >
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div> -->
+            <!-- <div class="group">
+                <div class="group__item group__item--expand">
+                    <app-select
+                        [options]="tonalities()"
+                        [label]="'Тональность'"
+                        [required]="true"
+                        (optionSelected)="formGroup.controls.tonality.setValue($event.value)"
+                    ></app-select>
+                </div>
+            </div> -->
+
+            @if (formGroup.controls.monitor.getRawValue()) {
+                <div class="group">
+                    <div class="group__item">
+                        <label class="radio m-r">
+                            <input
+                                class="radio__control"
+                                type="radio"
+                                name="monitoringType"
+                                value="ONE_TIME"
+                                [formControl]="formGroup.controls.monitoringDetails.controls.monitoringType"
+                            >
+                            <div class="radio__label"> {{ 'accounts.oneTimeColletion' | transloco }} </div>
+                        </label>
+                        <label class="radio">
+                            <input
+                                class="radio__control"
+                                type="radio"
+                                name="monitoringType"
+                                value="REGULAR"
+                                [formControl]="formGroup.controls.monitoringDetails.controls.monitoringType"
+                            >
+                            <div class="radio__label"> {{ 'accounts.regularCollection' | transloco }} </div>
+                        </label>
+                    </div>
+                </div>
+
+                @if (formGroup.controls.monitoringDetails.controls.monitoringType.getRawValue() === 'REGULAR') {
+                    <div class="group">
+                        <div class="group__item group__flex">
+                            <div class="m-b">
+                                <div class="text text-500">
+                                    {{ 'accounts.collectionPeriod' | transloco }}
+                                    <mark>*</mark>
+                                </div>
+                            </div>
+                            <app-custom-datepicker
+                                [mode]="'range'"
+                                [showTime]="true"
+                                [minDate]="today"
+                                [dateFormat]="'DD.MM.YYYY'"
+                                [formControl]="regularPeriodControl"
+                                [placeholder]="'common.choosePeriod' | transloco"
+                            ></app-custom-datepicker>
+                            @if (regularPeriodControl.invalid && regularPeriodControl.touched) {
+                                <div class="text text--sm text--error">
+                                    @if (regularPeriodControl.hasError('required')) {
+                                        <ng-container>
+                                            {{ 'common.fieldRequired' | transloco }}
+                                        </ng-container>
+                                    }
+                                </div>
+                            }
+                        </div>
+                    </div>
+                }
+
+                <div class="group">
+                    <div class="group__item group__flex">
+                        <div class="checkbox m-r">
+                            <input
+                                class="checkbox__control"
+                                type="checkbox"
+                                name="POSTS"
+                                id="POSTS"
+                                value="POSTS"
+                                checked
+                                (change)="onCollectedSectionsCheckboxChanged($event)"
+                            >
+                            <label class="checkbox__label" for="POSTS"> {{ 'accounts.publications' | transloco }} </label>
+                        </div>
+                        <div class="checkbox">
+                            <input
+                                class="checkbox__control"
+                                type="checkbox"
+                                name="MEMBERS"
+                                id="MEMBERS"
+                                value="MEMBERS"
+                                checked
+                                (change)="onCollectedSectionsCheckboxChanged($event)"
+                            >
+                            <label class="checkbox__label" for="MEMBERS"> {{ 'accounts.headerTitle' | transloco }} </label>
+                        </div>
+                    </div>
+                </div>
+            }
+
+<!--            @if (formGroup.controls.sourceType.getRawValue() === 'SOCIAL_NETWORK') {-->
+
+<!--                <div class="group">-->
+<!--                    <div class="group__item">-->
+<!--                        <label class="radio m-r">-->
+<!--                            <input-->
+<!--                                class="radio__control"-->
+<!--                                type="radio"-->
+<!--                                name="global"-->
+<!--                                [value]="true"-->
+<!--                                [formControl]="formGroup.controls.global"-->
+<!--                            >-->
+<!--                            <div class="radio__label"> {{ 'accounts.visibleToAll' | transloco }} </div>-->
+<!--                        </label>-->
+<!--                        <label class="radio">-->
+<!--                            <input-->
+<!--                                class="radio__control"-->
+<!--                                type="radio"-->
+<!--                                name="global"-->
+<!--                                [value]="false"-->
+<!--                                [formControl]="formGroup.controls.global"-->
+<!--                            >-->
+<!--                            <div class="radio__label"> {{ 'accounts.onlyMe' | transloco }} </div>-->
+<!--                        </label>-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--            }-->
+        </form>
+    </div>
+</app-modal-wrap>

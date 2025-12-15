@@ -1,0 +1,79 @@
+<div [class.tile--table]="dataView() === 'table'" class="tile" style="flex: 1">
+    <!-- Tabs Navigation using ViewSelector -->
+    <app-view-selector
+        [tabs]="tabs"
+        [activeTabKey]="activeTabKey()"
+        [basePath]="basePath()"
+        [showCount]="true"
+        [countValue]="pageInfo().totalElements"
+        [countTabKey]="activeTabKey()"
+    ></app-view-selector>
+
+    <div class="tile__topbar">
+        <div class="text text--lg text--700">
+            {{ 'accounts.totalElements' | transloco }}: {{ pageInfo().totalElements }}
+        </div>
+        <div class="panel panel--md">
+            <div class="panel__content">
+                <app-view-switch (changed)="onViewChange($event)" [view]="dataView()"></app-view-switch>
+                <app-sorting
+                    (changed)="onSortingChange($event)"
+                    [items]="sortingItems"
+                    [position]="'right'"
+                    [sort]="queryParams().sort"
+                ></app-sorting>
+                <app-search-bar (searched)="handleSearch($event.search)"></app-search-bar>
+            </div>
+        </div>
+    </div>
+    <div class="tile__body">
+        @if (isLoading()) {
+            <div class="tile tile--center">
+                <div class="loader loader--sm">
+                    <div class="loader__container"></div>
+                </div>
+            </div>
+        }
+
+        @if (!isLoading() && accounts().length === 0) {
+            <app-not-found
+                [title]="'notFound.nothingFound' | transloco"
+                [subtitle]="''"
+            ></app-not-found>
+        }
+
+        @if (dataView() === 'table' && accountsMapped().length > 0) {
+            <app-table-component
+                [class]="'table--deanon-history'"
+                [columns]="tableColumns()"
+                [data]="accountsMapped()"
+            ></app-table-component>
+        }
+
+        @if (dataView() === 'list' && accountsMapped().length > 0) {
+            <div class="virtual-scroll">
+                <div class="group group--xl group--vertical">
+                    @for (account of accounts(); track $index) {
+                        <app-collection-card
+                            [collection]="account"
+                            [platforms]="allowedPlatforms()"
+                            (refetchData)="updateGeneralInfo()"
+                        ></app-collection-card>
+                    }
+                </div>
+            </div>
+        }
+    </div>
+    @if (!isLoading() && accounts().length > 0) {
+        <div class="tile__pagination">
+            <app-pagination-panel
+                [selectPanelPosition]="'up'"
+                [totalElements]="pageInfo().totalElements"
+                [totalPages]="pageInfo().totalPages"
+                [pageParams]="pageInfo().pageParams"
+                (pageChanged)="handleChangePage($event)"
+                (itemsPerPageChanged)="handleItemsPerPageChange($event)"
+            ></app-pagination-panel>
+        </div>
+    }
+</div>

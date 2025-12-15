@@ -1,0 +1,53 @@
+@use '../../../../.././assets/scss/util/rem-mixin' as *;
+@use '../../../../.././assets/scss/util/bem-mixin' as *;
+@use '../../../../.././assets/scss/settings' as *;
+
+
+@include b(account) {
+    @include e(wrapper) {
+        gap: rem($spacing-3xl);
+    }
+}
+
+.body__wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    flex: 1 1 auto;
+    min-height: 0;
+}
+
+.grid__header {
+    flex: 0 0 auto;
+}
+
+app-members {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+    min-height: 0;
+}
+
+.account-content-wrapper__container {
+    display: flex;
+    gap: 1.5rem;
+    flex: 1 1 auto;
+    min-height: 0;
+    width: 100%;
+}
+
+.custom-tabs {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    flex: 1;
+    gap: rem($spacing-xl)
+}
+
+
+.custom-tabs__content {
+    display: flex;
+    flex: 1;
+    height: 100%;
+    min-height: 0;
+}

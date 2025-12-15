@@ -1,0 +1,133 @@
+<div class="grid grid--group">
+    <div class="grid__body">
+        <div class="grid__content">
+            <div class="tile">
+                <div class="tile__topbar tile__topbar--publications">
+                    <div class="text text--lg text--700">
+                        {{ 'accounts.totalElements' | transloco }}<span
+                        *ngIf="posts.totalElements > 0">: {{ posts.totalElements }}</span>
+                    </div>
+
+                    <!-- Search and Filter Section -->
+                    <div class="search-filter-container">
+                        <div class="search-wrapper">
+                            <app-search-bar (searched)="handleSearch($event)"></app-search-bar>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tile__body tile__body--scrollable" #scrollContainer>
+                    @if (isLoadingMore && hasMore) {
+                        <div class="tile tile--center loading-more">
+                            <div class="loader loader--sm">
+                                <div class="loader__container"></div>
+                            </div>
+                        </div>
+                    }
+
+                    @if (isLoading) {
+                        <div class="tile tile--center">
+                            <div class="loader loader--sm">
+                                <div class="loader__container"></div>
+                            </div>
+                        </div>
+                    }
+
+                    @if (!isLoading && allPosts.length === 0) {
+                        <app-not-found
+                            [title]="'notFound.nothingFound' | transloco"
+                            [subtitle]="''"
+                        ></app-not-found>
+                    }
+
+                    <div *ngIf="!isLoading && allPosts.length > 0" class="publications">
+                        <div class="publications__section">
+                            <ng-container *ngFor="let group of groupedPosts">
+                                <!-- Date Divider -->
+                                <div class="date-divider">
+                                    <span class="date-divider__text">
+                                        @if (group.dateLabel.startsWith('common.')) {
+                                            {{ group.dateLabel | transloco }}
+                                        } @else {
+                                            {{ group.dateLabel }}
+                                        }
+                                    </span>
+                                </div>
+
+                                <!-- Publication Card -->
+                                <div *ngFor="let post of group.posts" class="publication">
+                                    <!-- Header with Avatar and User Info -->
+                                    <div class="publication__header">
+                                        <div class="publication__avatar">
+                                            <img [src]="profilePhoto || 'assets/img/misc/person-avatar.png'"
+                                                 alt="" class="avatar__image">
+                                        </div>
+                                        <div class="publication__user-info">
+                                            <span class="publication__username">
+                                                {{ post.username }}
+                                            </span>
+                                            <span class="publication__date">
+                                                {{ post.createdAt | date: 'dd.MM.yyyy HH:mm' }}
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    <!-- Content -->
+                                    <div class="publication__content">
+                                        <!-- Text -->
+                                        <div *ngIf="post.text" class="publication__text">
+                                            {{ post.text | transloco }}
+                                        </div>
+
+                                        <!-- Media Gallery -->
+                                        <div *ngIf="post.attachPaths.length > 0" class="media-gallery">
+                                            <!-- Images -->
+                                            <ng-container *ngIf="post.imgUrls">
+                                                <div *ngFor="let image of post.imgUrls"
+                                                     class="media-item"
+                                                     (click)="$event.stopPropagation(); showMediaFullscreen(image)">
+                                                    <img [src]="image.url"
+                                                         [alt]="image.url"
+                                                         class="media-item__image">
+                                                </div>
+                                            </ng-container>
+
+                                            <!-- Videos -->
+                                            <ng-container *ngIf="post.videoUrls">
+                                                <div *ngFor="let video of post.videoUrls"
+                                                     class="media-item media-item--video"
+                                                     (click)="$event.stopPropagation(); showMediaFullscreen(video)">
+                                                    <video [id]="'video' + video.url" class="media-item__video">
+                                                        <source [src]="video.url" [type]="video.type"/>
+                                                    </video>
+                                                    <button type="button" class="media-item__play-button">
+                                                        <svg xmlns="http://www.w3.org/2000/svg"
+                                                             width="28" height="28"
+                                                             viewBox="0 0 28 28"
+                                                             fill="none">
+                                                            <path d="M14 28C6.26809 28 0 21.7319 0 14C0 6.26809 6.26809 0 14 0C21.7319 0 28 6.26809 28 14C28 21.7319 21.7319 28 14 28ZM12.0707 8.98044C11.9454 8.91895 11.8039 8.88636 11.66 8.88636C11.2507 8.88636 10.92 9.21709 10.92 9.62636V18.3736C10.92 18.5175 10.9526 18.6591 11.0141 18.7843C11.2188 19.2083 11.7218 19.354 12.1458 19.1493L18.7532 14.9507C18.8849 14.8627 18.998 14.7496 19.0859 14.618C19.2906 14.194 19.1449 13.691 18.7209 13.4863L12.0707 8.98044Z"
+                                                                  fill="white"
+                                                                  fill-opacity="0.9"/>
+                                                        </svg>
+                                                    </button>
+                                                </div>
+                                            </ng-container>
+                                        </div>
+                                    </div>
+                                </div>
+                            </ng-container>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<app-media-view
+    (click)="$event.stopPropagation(); onMediaViewerClose($event)"
+    (closed)="onMediaViewerClose($event)"
+    *ngIf="shownMedia"
+    [media]="shownMedia"
+    id="media-overlay"
+></app-media-view>

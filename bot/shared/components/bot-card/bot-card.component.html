@@ -1,0 +1,102 @@
+<!-- <app-checkbox
+    [index]="index"
+    [class]="'card__checkbox'"
+    [display]="selectedRows.includes(index) ? 'block' : 'none'"
+    [value]="selectedRows.includes(index)"
+    (checked)="onSelectRowHandler(index)"
+    (click)="$event.stopPropagation()">
+</app-checkbox> -->
+
+<div class="card__avatar">
+    <div class="avatar">
+        <div class="avatar__wrapper">
+            <img class="avatar__image" src="assets/img/misc/bot-avatar.png" alt="">
+
+            @defer (when (typeof platformId() === 'number') && platforms().length) {
+                <app-platform-icon
+                    [platform]="platformId()"
+                    [platformList]="platforms()"
+                >
+                </app-platform-icon>
+            }
+        </div>
+    </div>
+</div>
+<div class="card__details">
+    <div class="card__title">
+        <div class="group group--vertical group--xs">
+            <div class="card__name">
+                {{ data?.name }}
+            </div>
+            <div class="card__name">
+                <div class="card__username">
+                    {{ data?.phone }}
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card__stats">
+        <div class="card__stats-item">
+            <div class="text text--sm text--600">{{ data?.totalSessionCount }}</div>
+            <div
+                class="text text--sm text--tetriary-600"
+                style="cursor: pointer;"
+                (click)="$event.stopPropagation(); onSessionsClick()"
+            >
+                {{ data?.totalSessionCount | wordEnding: 'sessions' | transloco }}
+            </div>
+        </div>
+        <div class="card__stats-item">
+            <div class="text text--sm text--600 text--success">{{ data?.activeSessionCount }}</div>
+            <div class="text text--sm text--tetriary-600">{{ data?.activeSessionCount | wordEnding: 'active' | transloco }}</div>
+        </div>
+        <div class="card__stats-item">
+            <div class="text text--sm text--600 text--error">{{ data?.inactiveSessionCount }}</div>
+            <div class="text text--sm text--tetriary-600">{{ data?.inactiveSessionCount | wordEnding: 'inactive' | transloco }}</div>
+        </div>
+        <div class="card__stats-item">
+            <div class="text text--sm text--600">{{ data?.groupCount }}</div>
+            <div class="text text--sm text--tetriary-600">{{ data?.groupCount | wordEnding: 'groups' | transloco }}</div>
+        </div>
+    </div>
+</div>
+<div class="card__aside card__aside--vertical">
+    @if (hasActions) {
+        <div class="card__aside-layout m-b" style="text-align: left;">
+            <app-actions-dropdown
+                [items]="actions"
+                (actionClicked)="$event.onClick(data)"
+                (click)="$event.stopPropagation()"
+            >
+            </app-actions-dropdown>
+        </div>
+    }
+    <div class="card__aside-bottom">
+        <div class="group group--vertical group--xs">
+            @if (data?.createdAt) {
+                <div class="panel panel--sm">
+                    <div class="panel__content">
+                        <div class="text text--tetriary text-400">
+                            {{ 'status.created' | transloco }}:
+                        </div>
+                        <div class="text">
+                            {{ data.createdAt | date: 'dd.MM.yyyy HH:mm:ss' }}
+                        </div>
+                    </div>
+                </div>
+            }
+            @if (data?.lastCrwDate && isDetails) {
+                <div class="panel panel--sm">
+                    <div class="panel__content">
+                        <div class="text text--tetriary text-400">
+                            {{ 'bots.lastCollection' | transloco }}:
+                        </div>
+                        <div class="text">
+                            {{ data.lastCrwDate | date: 'dd.MM.yyyy HH:mm:ss' }}
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>

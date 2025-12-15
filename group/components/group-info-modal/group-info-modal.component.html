@@ -1,0 +1,137 @@
+<app-modal-wrap
+    [size]="'ai-info'"
+    (closeModal)="closeBtn()"
+>
+    <div modal-header>
+        <div class="group-info-modal__header">
+            <h2 class="group-info-modal__title">{{ title }}</h2>
+        </div>
+    </div>
+
+    <div modal-body>
+        @if (loading) {
+            <app-loader [expand]="true"></app-loader>
+        }
+        @else {
+            <div class="group-info-modal__content">
+                <!-- Description Section -->
+                <div class="group-info-modal__section">
+                    <h3 class="group-info-modal__section-title">Описание</h3>
+                    <p class="group-info-modal__description">{{ description }}</p>
+                </div>
+
+                <!-- Details Grid -->
+                <div class="group-info-modal__details">
+                    <!-- ID -->
+                    <div class="group-info-modal__detail-item">
+                        <p class="group-info-modal__label">ID</p>
+                        <p class="group-info-modal__value">{{ groupDetails.id }}</p>
+                    </div>
+
+                    <!-- URL -->
+                    <div class="group-info-modal__detail-item">
+                        <p class="group-info-modal__label">URL</p>
+                        <button
+                            class="group-info-modal__link-button"
+                            (click)="openLink(groupDetails.url)"
+                        >
+                            <span class="group-info-modal__link-text">{{ groupDetails.url }}</span>
+                            <svg class="group-info-modal__link-icon" width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                <path d="M5.83301 14.1663L14.1663 5.83301M14.1663 5.83301H5.83301M14.1663 5.83301V14.1663"
+                                      stroke="currentColor"
+                                      stroke-width="1.66667"
+                                      stroke-linecap="round"
+                                      stroke-linejoin="round"/>
+                            </svg>
+                        </button>
+                    </div>
+
+                    <!-- Privacy -->
+                    <div class="group-info-modal__detail-item">
+                        <p class="group-info-modal__label">Приватность</p>
+                        <span class="group-info-modal__badge group-info-modal__badge--success">
+                            {{ groupDetails.privacy }}
+                        </span>
+                    </div>
+
+                    <!-- Type -->
+                    <div class="group-info-modal__detail-item">
+                        <p class="group-info-modal__label">Тип Сообщества</p>
+                        <p class="group-info-modal__value">{{ groupDetails.type }}</p>
+                    </div>
+
+                    <!-- Invite Link -->
+                    <div class="group-info-modal__detail-item">
+                        <p class="group-info-modal__label">Ссылка для приглашения</p>
+                        <button
+                            class="group-info-modal__link-button"
+                            (click)="openLink(groupDetails.inviteLink)"
+                        >
+                            <span class="group-info-modal__link-text">{{ groupDetails.inviteLink }}</span>
+                            <svg class="group-info-modal__link-icon" width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                <path d="M5.83301 14.1663L14.1663 5.83301M14.1663 5.83301H5.83301M14.1663 5.83301V14.1663"
+                                      stroke="currentColor"
+                                      stroke-width="1.66667"
+                                      stroke-linecap="round"
+                                      stroke-linejoin="round"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Added By Section -->
+                <div class="group-info-modal__section">
+                    <h3 class="group-info-modal__section-title">Добавлен</h3>
+                    <div class="group-info-modal__user-card">
+                        <div class="group-info-modal__avatar">
+                            @if (addedByUser.avatarUrl) {
+                                <img [src]="addedByUser.avatarUrl" [alt]="addedByUser.name">
+                            }
+                            @else {
+                                <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                    <path d="M16.6663 17.5V15.8333C16.6663 14.9493 16.3152 14.1014 15.6901 13.4763C15.065 12.8512 14.2171 12.5 13.333 12.5H6.66634C5.78229 12.5 4.93444 12.8512 4.30932 13.4763C3.68419 14.1014 3.33301 14.9493 3.33301 15.8333V17.5M13.333 5.83333C13.333 7.67428 11.8406 9.16667 9.99967 9.16667C8.15872 9.16667 6.66634 7.67428 6.66634 5.83333C6.66634 3.99238 8.15872 2.5 9.99967 2.5C11.8406 2.5 13.333 3.99238 13.333 5.83333Z"
+                                          stroke="currentColor"
+                                          stroke-width="1.66667"
+                                          stroke-linecap="round"
+                                          stroke-linejoin="round"/>
+                                </svg>
+                            }
+                        </div>
+                        <div class="group-info-modal__user-info">
+                            <div class="group-info-modal__user-name-row">
+                                <span class="group-info-modal__user-name">{{ addedByUser.name }}</span>
+                                <span class="group-info-modal__user-username">{{ addedByUser.username }}</span>
+                            </div>
+                            <p class="group-info-modal__user-meta">
+                                Посл.сбор: <span>{{ addedByUser.lastCollectionDate }}</span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- AI Profile Section -->
+                <div class="group-info-modal__ai-section">
+                    <div class="group-info-modal__ai-header">
+                        <h3 class="group-info-modal__ai-title">ИИ профиль</h3>
+                        <button
+                            class="group-info-modal__refresh-button"
+                            (click)="onRefreshAIProfile()"
+                            [disabled]="aiProfileLoading"
+                        >
+                            <app-svg-icon [icon]="'icon-refresh'"></app-svg-icon>
+                        </button>
+                    </div>
+
+                    <div class="group-info-modal__ai-content">
+                        <p class="group-info-modal__ai-conclusion">
+                            <strong>Вывод:</strong> {{ aiProfile.conclusion }}
+                        </p>
+                    </div>
+                    <p class="group-info-modal__ai-footer">
+                        Дата cоздания <span>{{ aiProfile.createdDate }}</span>
+                    </p>
+                </div>
+            </div>
+        }
+    </div>
+</app-modal-wrap>

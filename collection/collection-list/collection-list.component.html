@@ -1,0 +1,76 @@
+<app-base-pageable-list
+    [isLoading]="isLoading()"
+    [data]="collections()"
+    [totalElements]="pageInfo().totalElements"
+    [totalPages]="pageInfo().totalPages"
+    [pageParams]="pageInfo().pageParams"
+    [queryParams]="queryParams()"
+    [sortingItems]="sortingItems"
+    (searchHandled)="handleSearch($event)"
+    (sortingHandled)="onSortingChange($event)"
+    (updated)="handleChangePageParams($event)"
+>
+    <ng-container ngProjectAs="tree">
+        <div class="sidebar__section">
+            <div class="tile">
+                <div class="tile__body">
+                    <app-directory-tree [hasFavorite]="true"></app-directory-tree>
+                </div>
+            </div>
+        </div>    </ng-container>
+
+    <ng-container ngProjectAs="filter">
+        <app-collection-filter
+            [filterType]="filterType()"
+            [sourceTypes]="sourceTypes()"
+            (applied)="handleFilter($event)"
+        ></app-collection-filter>
+    </ng-container>
+
+    <ng-container ngProjectAs="tabs">
+        <app-view-selector
+            [tabs]="tabs"
+            [activeTabKey]="activeTabKey"
+            [showCount]="true"
+            [countValue]="pageInfo().totalElements"
+            [countTabKey]="activeTabKey"
+        ></app-view-selector>
+
+    </ng-container>
+
+    <ng-container ngProjectAs="actions">
+        <button class="button" (click)="openAddModal(collectionType())">
+            <div class="button__icon icon">
+                <app-svg-icon [icon]="'icon-plus'"></app-svg-icon>
+            </div>
+            <div class="button__name">{{ 'button.add' | transloco }}</div>
+        </button>
+    </ng-container>
+
+    @if (collectionsMapped() && collectionsMapped().length > 0) {
+        <ng-container ngProjectAs="table">
+            <app-table-component
+                [columns]="tableColumns()"
+                [data]="collectionsMapped()"
+                [selectable]="true"
+                [selectedRows]="selectedRows()"
+                [activeSort]="activeSort()"
+                (rowClicked)="goToDetails($event.id)"
+                (sortClicked)="onSortClicked($event)"
+                (rowSelected)="onRowSelected($event)"
+                (allSelected)="onAllSelected()"
+            ></app-table-component>
+        </ng-container>
+    }
+
+    <ng-container ngProjectAs="list">
+        @for (collection of collections(); track $index) {
+            <app-collection-card
+                [collection]="collection"
+                [platforms]="allowedPlatforms()"
+                (clicked)="goToDetails(collection.id)"
+                (refetchData)="getCollections()"
+            ></app-collection-card>
+        }
+    </ng-container>
+</app-base-pageable-list>

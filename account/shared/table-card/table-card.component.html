@@ -1,0 +1,161 @@
+<div class="card__avatar" style="width: 2.5rem;">
+    <div class="avatar avatar--group">
+        <div class="avatar__wrapper">
+            <img
+                    [class.avatar__image--loaded]="account().photo !== 'assets/img/misc/person-avatar.png'"
+                    [src]="account().photo"
+                    alt="Avatar"
+                    class="avatar__image"
+                    (click)="onAvatarClick()"
+            >
+            @defer (when (typeof platformId() === 'number') && platforms().length) {
+                <app-platform-icon
+                        [platform]="platformId()"
+                        [platformList]="platforms()"
+                ></app-platform-icon>
+            }
+        </div>
+    </div>
+</div>
+<div class="card__details">
+    <div class="group">
+        @if (account().monitor) {
+            <app-badge
+                    [color]="'success'"
+                    [label]="'accounts.onMonitoring' | transloco"
+                    [prefixIcon]="'icon-eye'"
+                    [capitalize]="false"
+            ></app-badge>
+        }
+        @if (account().collectStatus) {
+            <app-badge
+                    *ngIf="collectStatus()"
+                    [color]="collectStatus().color"
+                    [label]="collectStatus().label | transloco"
+                    [capitalize]="false"
+            ></app-badge>
+        }
+    </div>
+
+    <div class="card__title">
+        <div class="group group--vertical group--md">
+            <div *ngIf="account().title" class="card__name">
+                {{ account().title }}
+            </div>
+            <ng-container *ngIf="account().username">
+                @defer (when account().username) {
+                    <div class="card__name">
+                        {{ '@' + account().username }}
+                    </div>
+                }
+            </ng-container>
+            <ng-container *ngIf="account().accountId">
+                @defer (when account().accountId) {
+                    <div class="card__name">
+                        {{ 'ID:' + account().accountId }}
+                    </div>
+                }
+            </ng-container>
+            <ng-container *ngIf="account().url">
+                @defer (when account().url) {
+                    <div class="card__name">
+                        <a [href]="account().url" class="link" target="_blank">
+                            {{ account().url }}
+                            <div class="link__icon icon">
+                                <app-svg-icon icon="icon-up-right"/>
+                            </div>
+                        </a>
+                    </div>
+                }
+            </ng-container>
+            @if (!account().title && !account().url && !account().username) {
+                <div class="card__name">
+                    @switch (account().searchParamType) {
+                        @case ('SCREEN_NAME') {
+                            {{ '@' + account().searchValue }}
+                        }
+                        @case ('ID') {
+                            {{ 'ID: ' + account().searchValue }}
+                        }
+                        @case ('URL') {
+                            <a [href]="account().searchValue" class="link" target="_blank">
+                                {{ account().searchValue }}
+                                <div class="link__icon icon">
+                                    <app-svg-icon icon="icon-up-right"/>
+                                </div>
+                            </a>
+                        }
+                    }
+                </div>
+            }
+            <ng-container *ngIf="bindingList.length > 0">
+                <div class="grid__label">
+                    {{ 'deanon.bindedNumbers' | transloco }}:
+                    <app-badge-2
+                            *ngFor="let binding of bindingList"
+                            [text]="binding.identifier"
+                            [type]="'sm'"
+                    >
+                    </app-badge-2>
+                </div>
+            </ng-container>
+        </div>
+    </div>
+    <!-- <div class="card__badges">
+        @for (tag of tags(); track $index) {
+            <app-badge
+                [label]="tag"
+            ></app-badge>
+        }
+    </div> -->
+</div>
+<div class="card__aside card__aside--vertical">
+    <div class="card__aside-layout m-b">
+        <div class="badge badge--xl badge--white" style="gap: 0.5rem">
+            {{ 'accounts.groupCount' | transloco }}
+            @if (typeof account().groupCount === 'number') {
+                <div class="count text--400">{{ account().groupCount }}</div>
+            }
+        </div>
+        <div class="badge badge--xl badge--white" style="gap: 0.5rem">
+            {{ 'accounts.publicationsCount' | transloco }}
+            @if (typeof account().postCount === 'number') {
+                <div class="count text--400">{{ account().postCount }}</div>
+            }
+        </div>
+        @if (showMonitoring()) {
+            @if (isOnline && !(account().sourceType === 'MESSENGER' && (account().platform === 'TELEGRAM' || account().platform === 'WHATSAPP'))) {
+                <button
+                    class="button button--secondary-gray"
+                    [class.button--allert]="account().monitor"
+                    (click)="$event.stopPropagation(); account().monitor ? monitoringDisabled.emit() : monitoringCreated.emit()"
+                >
+                    <div class="button__icon icon">
+                        <app-svg-icon
+                            [icon]="account().monitor ? 'icon-eye-off' : 'icon-eye'"
+                        ></app-svg-icon>
+                    </div>
+                    <div class="button__name">{{ account().monitor ? ('accounts.end' | transloco) : ('accounts.monitoring' | transloco) }}</div>
+                </button>
+            }
+        }
+
+        <!--        <app-button-dropdown-->
+        <!--            [items]="actions"-->
+        <!--            [icon]="'icon-dots-vertical'"-->
+        <!--            className="button&#45;&#45;secondary-gray"-->
+        <!--        ></app-button-dropdown>-->
+    </div>
+    <div class="card__aside-bottom">
+        @if (account().lastCollectedAt) {
+            <div class="group group--vertical group--xs">
+                <div class="text text--tetriary text-400">
+                    {{ 'accounts.lastCollectionDate' | transloco }}
+                </div>
+                <div class="text">
+                    {{ account().lastCollectedAt | date: 'dd.MM.yyyy HH:mm:ss' }}
+                </div>
+            </div>
+        }
+    </div>
+</div>

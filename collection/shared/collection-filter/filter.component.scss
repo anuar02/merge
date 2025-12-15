@@ -1,0 +1,124 @@
+@use '../../../../../../assets/scss/settings' as *;
+@use '../../../../../../assets/scss/util/rem-mixin' as *;
+
+.filter-container {
+    padding: 0;
+
+    .tile__header {
+        padding: rem($spacing-xl) rem($spacing-3xl) 0;
+    }
+
+    .tile__body {
+        padding: 0;
+    }
+
+    .tile__footer {
+        padding: rem($spacing-xl) rem($spacing-3xl);
+    }
+}
+
+.filter {
+    &__body {
+        padding: rem($spacing-lg) 0;
+        row-gap: rem(20px);
+    }
+
+    &__section {
+        & + & {
+            margin-top: rem($spacing-md);
+        }
+    }
+}
+
+.filter-checkbox-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: rem($spacing-md) 0;
+
+    &__content {
+        flex: 1;
+    }
+
+    &__count {
+        flex-shrink: 0;
+        margin-left: rem($spacing-lg);
+        font-size: rem($text-sm);
+    }
+
+    &--subsection {
+        padding: rem($spacing-md) 0;
+    }
+}
+
+.filter-field {
+    padding: rem($spacing-md) 0;
+
+    &--range {
+        display: flex;
+        flex-direction: column;
+        gap: rem($spacing-lg);
+    }
+}
+
+.filter-range-inputs {
+    display: flex;
+    gap: rem($spacing-md);
+
+    .input {
+        flex: 1;
+    }
+}
+
+// Accordion customization for collection-filter
+::ng-deep .filter-container {
+    app-accordion {
+        .accordion__header {
+            padding: rem($spacing-lg) rem($spacing-xl);
+            margin: 0 rem($spacing-md);
+            column-gap: 0;
+        }
+
+        .accordion__header--level-1 {
+            .accordion__header {
+                margin: 0 rem($spacing-md);
+                padding: rem($spacing-lg) rem($spacing-md);
+            }
+
+            .accordion__list {
+                padding: 0 rem($spacing-xl) 0 rem($spacing-md);
+            }
+        }
+
+        .accordion__list {
+            padding: 0 rem($spacing-3xl);
+        }
+
+        // Nested accordion (subsections)
+        app-accordion {
+            .accordion__list {
+                padding: 0 rem($spacing-3xl) 0 rem($spacing-md);
+            }
+        }
+
+
+    }
+
+    // Checkbox in header styling
+    .checkbox--header {
+        .checkbox__label {
+            padding: 0;
+
+            &::before {
+                margin: 0;
+            }
+        }
+    }
+}
+
+
+.accordion--level-1 {
+    .accordion__header {
+        padding-left: 0;
+    }
+}

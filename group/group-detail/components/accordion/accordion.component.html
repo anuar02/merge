@@ -1,0 +1,15 @@
+<div class="accordion accordion--flat" [class.accordion--active]="accordionIsActive">
+    <div class="accordion__header" (click)="toggleAccordion()">
+        <div class="text text--sm text--600">
+            {{ title }}
+        </div>
+        <div class="accordion__toggle icon">
+            <app-svg-icon icon="icon-chevron-down"></app-svg-icon>
+        </div>
+    </div>
+    <div class="accordion__body" *ngIf="accordionIsActive">
+        <div class="accordion__content">
+            <ng-content></ng-content>
+        </div>
+    </div>
+</div>

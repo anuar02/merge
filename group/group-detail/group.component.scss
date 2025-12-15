@@ -1,0 +1,50 @@
+@use '../../../../../assets/scss/util/rem-mixin' as *;
+@use '../../../../../assets/scss/settings' as *;
+
+.body__wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    flex: 1 1 auto;
+    min-height: 0;
+}
+
+.grid__header {
+    flex: 0 0 auto;
+}
+
+app-members {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+    min-height: 0;
+}
+
+.group-content-wrapper__container {
+    display: flex;
+    gap: 1.5rem;
+    flex: 1 1 auto;
+    min-height: 0;
+}
+
+.group-content-wrapper__section {
+    display: flex;
+    flex-direction: column;
+    background: $bg-primary;
+    border: 1px solid $border-secondary;
+    overflow: hidden;
+    border-radius: rem($radius-md);
+    min-height: 0;
+
+    &--members {
+        width: 60%;
+        flex: 1 1 auto;
+        min-height: 0;
+    }
+
+    &--publications {
+        width: 40%;
+        flex: 1 1 auto;
+        min-height: 0;
+    }
+}

@@ -1,0 +1,18 @@
+<div class="account-content-wrapper__container">
+    <div class="account-content-wrapper__section account-content-wrapper__section--members">
+        <app-social-media-members [tabType]="currentTab()"></app-social-media-members>
+    </div>
+
+    @if (sourceType === 'SOCIAL_NETWORK') {
+        <div class="account-content-wrapper__section account-content-wrapper__section--publications">
+            <app-social-media-publications></app-social-media-publications>
+        </div>
+    }
+
+    @if (sourceType === 'MESSENGER') {
+        <div class="account-content-wrapper__section account-content-wrapper__section--publications">
+            <app-messenger-publications></app-messenger-publications>
+        </div>
+    }
+
+</div>

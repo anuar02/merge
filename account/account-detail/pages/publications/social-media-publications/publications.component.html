@@ -1,0 +1,157 @@
+<div class="grid grid--group">
+    <div class="grid__body">
+        <div class="grid__content">
+            <div class="tile">
+                <div class="tile__topbar tile__topbar--publications">
+                    <!-- Tabs Section -->
+                    <div class="tabs-section">
+                        <div class="tabs-container">
+                            <button class="tab-button tab-button--active">
+                                <span class="tab-button__text">{{ 'accounts.publications' | transloco }}</span>
+                                <span class="tab-button__badge tab-button__badge--active">{{ posts.totalElements || 0 }}</span>
+                            </button>
+                            <button class="tab-button">
+                                <span class="tab-button__text">{{ 'accounts.stories' | transloco }}</span>
+                                <span class="tab-button__badge">0</span>
+                            </button>
+                            <button class="tab-button">
+                                <span class="tab-button__text">{{ 'accounts.comments' | transloco }}</span>
+                                <span class="tab-button__badge">0</span>
+                            </button>
+                        </div>
+
+                        <!-- Search and Filter -->
+                        <div class="search-filter-container">
+                            <div class="search-wrapper">
+                                <app-search-bar (searched)="handleSearch($event)"></app-search-bar>
+                            </div>
+                            <button class="filter-button">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                    <path d="M5 10H15M2.5 5H17.5M7.5 15H12.5" stroke="currentColor" stroke-width="1.67" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="tile__body tile__body--scrollable" #scrollContainer>
+                    @if (isLoadingMore && hasMore) {
+                        <div class=" tile--center loading-more">
+                            <div class="loader loader--sm">
+                                <div class="loader__container"></div>
+                            </div>
+                        </div>
+                    }
+
+                    @if (isLoading) {
+                        <div class=" tile--center">
+                            <div class="loader loader--sm">
+                                <div class="loader__container"></div>
+                            </div>
+                        </div>
+                    }
+
+                    @if (!isLoading && allPosts.length === 0) {
+                        <app-not-found
+                            [title]="'notFound.nothingFound' | transloco"
+                            [subtitle]="''"
+                        ></app-not-found>
+                    }
+
+                    <div *ngIf="!isLoading && allPosts.length > 0" class="publications">
+                        <div class="publications__section">
+                            <ng-container *ngFor="let group of groupedPosts">
+                                <div class="date-divider">
+                                    <span class="date-divider__text">
+                                        @if (group.dateLabel.startsWith('common.')) {
+                                            {{ group.dateLabel | transloco }}
+                                        } @else {
+                                            {{ group.dateLabel }}
+                                        }
+                                    </span>
+                                </div>
+
+                                <div *ngFor="let post of group.posts" class="publication">
+                                    <div class="publication__avatar">
+                                        <img [src]="profilePhoto || 'assets/img/misc/person-avatar.png'"
+                                             alt="" class="avatar__image">
+                                    </div>
+                                    <div class="publication__content-wrapper">
+                                        <div class="publication__header">
+                                            <div class="publication__user-info">
+                                                <div class="publication__username">
+                                                    {{ post.username }}
+                                                </div>
+                                                <div class="publication__date">
+                                                    {{ post.createdAt | date: 'dd.MM.yyyy HH:mm' }}
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="publication__content">
+                                            <!-- Media Gallery (Horizontal Scroll) -->
+                                            <div *ngIf="post.attachPaths.length > 0" class="media-gallery">
+                                                <ng-container *ngIf="post.imgUrls && post.imgUrls.length > 0">
+                                                    @for (image of post.imgUrls; track $index) {
+                                                        <div class="media-item">
+                                                            <img [src]="image.url"
+                                                                 [alt]="image.url"
+                                                                 class="media-item__image"
+                                                                 (click)="$event.stopPropagation(); showMediaFullscreen(image)">
+                                                        </div>
+                                                    }
+                                                </ng-container>
+
+                                                <ng-container *ngIf="post.videoUrls && post.videoUrls.length > 0">
+                                                    @for (video of post.videoUrls; track $index) {
+                                                        <div class="media-item media-item--video"
+                                                             (click)="$event.stopPropagation(); showMediaFullscreen(video)">
+                                                            <video [id]="'video' + video.url"
+                                                                   class="media-item__video">
+                                                                <source [src]="video.url" [type]="video.type"/>
+                                                            </video>
+                                                            <button type="button" class="media-item__play-button">
+                                                                <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 28 28" fill="none">
+                                                                    <circle cx="14" cy="14" r="14" fill="white" fill-opacity="0.7"/>
+                                                                    <path d="M11 9.5L18 14L11 18.5V9.5Z" fill="#101828"/>
+                                                                </svg>
+                                                            </button>
+                                                        </div>
+                                                    }
+                                                </ng-container>
+                                            </div>
+
+                                            <!-- Text Content -->
+                                            <div *ngIf="post.text" class="publication__text">
+                                                {{ post.text | transloco }}
+                                            </div>
+                                        </div>
+
+                                        <!-- Interaction Buttons -->
+                                        <div class="publication__actions">
+                                            <button class="action-button action-button--like">
+                                                <app-svg-icon [icon]="'icon-like'"></app-svg-icon>
+                                                <span class="action-button__count">{{ post.likesCount || 0 }}</span>
+                                            </button>
+                                            <button class="action-button action-button--comment">
+                                                <app-svg-icon [icon]="'icon-comments'"></app-svg-icon>
+                                                <span class="action-button__count action-button__count--active">{{ post.commentsCount || 0 }}</span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </ng-container>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<app-media-view
+    (click)="$event.stopPropagation(); onMediaViewerClose($event)"
+    (closed)="onMediaViewerClose($event)"
+    *ngIf="shownMedia"
+    [media]="shownMedia"
+    id="media-overlay"
+></app-media-view>

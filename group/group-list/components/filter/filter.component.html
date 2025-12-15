@@ -1,0 +1,62 @@
+<div class="tile">
+    <div class="tile__header">
+        <div class="tile__title">{{ 'common.collection-filter' | transloco }}</div>
+        <div class="tile__toggle">
+            <!--<button class="button button&#45;&#45;secondary-gray button&#45;&#45;sm">
+                <div class="button__icon icon">
+                    <app-svg-icon [icon]="'icon-chevron-left'"></app-svg-icon>
+                </div>
+            </button>-->
+        </div>
+    </div>
+    <div class="tile__body">
+        <div class="filter">
+            <div class="filter__body">
+                <div class="filter__section">
+                    <app-accordion [name]="'accounts.internetSourceType' | transloco" [accordionIsActive]="true">
+                        <ng-container items-postfix>
+                            @for (sourceType of sourceTypes(); track $index) {
+                                <app-accordion [name]="sourceType.sourceTypeTitle" [accordionIsActive]="true">
+                                    <ng-container items-postfix>
+                                        @for (platform of sourceType.platforms; track $index) {
+                                            <div class="panel">
+                                                <div class="panel__content">
+                                                    <input
+                                                        class="checkbox__control"
+                                                        type="checkbox"
+                                                        [name]="platform.name"
+                                                        [id]="platform.name"
+                                                        [value]="platform.name"
+                                                        [checked]="formGroup.controls.platforms.getRawValue().includes(platform.name)"
+                                                        (change)="onPlatformsCheckboxChanged($event)"
+                                                    >
+                                                    <label class="checkbox__label" [for]="platform.name"> {{ platform?.title }} </label>
+                                                </div>
+                                            </div>
+                                        }
+                                    </ng-container>
+                                </app-accordion>
+                            }
+
+                        </ng-container>
+                    </app-accordion>
+                <div class="spacing spacing--xl"></div>
+            </div>
+            </div>
+        </div>
+    </div>
+    <div class="tile__footer">
+        <div class="group group--auto-layout">
+            <button class="button button--secondary button--expand" (click)="resetFilter()">
+                <div class="button__name">
+                    {{ 'button.reset' | transloco }}
+                </div>
+            </button>
+            <button class="button button--expand" (click)="applied.emit()">
+                <div class="button__name">
+                    {{ 'button.apply' | transloco }}
+                </div>
+            </button>
+        </div>
+    </div>
+</div>

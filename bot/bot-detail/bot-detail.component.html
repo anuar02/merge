@@ -1,0 +1,103 @@
+<div class="body__container container">
+    <div class="body__wrapper">
+        <div class="grid grid--group">
+            <div class="grid__header">
+                <app-bot-card
+                    class="card--light"
+                    [actions]="dropdownItems"
+                    [data]="botInfo()"
+                    [isDetails]="true"
+                    [platforms]="allowedPlatforms()"
+                    (sessionsClicked)="openSessionsDrawer()"
+                >
+                </app-bot-card>
+            </div>
+
+            <div class="grid__body">
+                <!-- <div class="grid__sidebar grid__sidebar--348">
+                    <div class="sidebar">
+                            
+                    </div>
+                </div> -->
+
+                <div class="grid__content">
+                    <div class="tile">
+                        <div class="tile__topbar">
+                            <div class="text text--lg text--700">
+                                {{ 'common.resultsCount' | transloco }}: {{ pageInfo()?.totalElements ?? 0 }}
+                            </div>
+                            <div class="panel panel--md">
+                                <div class="panel__content">
+                                    <button class="button button--secondary-gray" (click)="onSelectAll()">
+                                        <div class="checkbox">
+                                            <input class="checkbox__control" type="checkbox"  id="selectAll"
+                                                [checked]="groups().length && selectedRows().length === groups().length">
+                                        </div>
+                                    </button>
+
+                                    <app-view-switch (changed)="onViewChange($event)"></app-view-switch>
+
+                                    <app-search-bar (searched)="handleSearch($event)"></app-search-bar>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tile__body">
+                            @if (isLoading()) {
+                                <app-loader></app-loader>
+                            }
+
+                            @if ((isLoaded() || isLoading() === false) && groups().length === 0) {
+                                <app-not-found></app-not-found>
+                            }
+
+                            @if (dataViewType === 'list') {
+                                @if (isLoaded() && groups().length > 0) {
+                                    <div class="group group--xl group--vertical">
+                                        @for (group of groups(); track $index) {
+                                            <app-group-table-card
+                                                [group]="group"
+                                                [hasClickOnGroupName]="true"
+                                                [platforms]="allowedPlatforms()"
+                                                (clicked)="goToGroupDetails(group.id)"
+                                                (monitoringCreated)="enableMonitoring(group.id)"
+                                                (monitoringDisabled)="disableMonitoring(group.id)"
+                                            ></app-group-table-card>
+                                        }
+                                    </div>
+                                }
+                            }
+
+                            @if (dataViewType === 'table') {
+                                @if (isLoaded() && groups().length > 0) {
+                                    <app-table
+                                        [class]="'table--common'"
+                                        [columns]="columns"
+                                        [data]="groups()"
+                                        [selectedRows]="selectedRowsIds()"
+                                        [checkbox]="{ visible: true, main: false }"
+                                        (rowSelected)="onSelectRow($event)"
+                                        (allSelected)="onSelectAll()">
+                                    </app-table>
+                                }
+                            }
+                        </div>
+                        @if (isLoaded() && groups().length > 0) {
+                            <div class="tile__pagination">
+                                <app-pagination-panel
+                                    [selectPanelPosition]="'up'"
+                                    [totalElements]="pageInfo()?.totalElements"
+                                    [totalPages]="pageInfo()?.totalPages"
+                                    [pageParams]="pageInfo()?.pageParams"
+                                    (itemsPerPageChanged)="handleChangeItemsPerPage($event)"
+                                    (pageChanged)="handleChangePage($event)">
+                                </app-pagination-panel>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<app-sessions-drawer [(active)]="isSessionsDrawerActive" [botId]="botInfo().id"></app-sessions-drawer>

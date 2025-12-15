@@ -1,0 +1,144 @@
+<div class="tile" style="flex: 1">
+    <div class="tile__topbar">
+        <div class="text text--lg text--700">
+            {{ 'accounts.publications' | transloco }}<span
+            *ngIf="posts.totalElements > 0">: {{ posts.totalElements }}</span>
+        </div>
+        <div class="panel panel--md">
+            <div class="panel__content">
+                <app-search-bar (searched)="handleSearch($event)"></app-search-bar>
+            </div>
+            <div class="panel__aside">
+            </div>
+        </div>
+    </div>
+    <div class="tile__body tile__body--scrollable" #scrollContainer>
+        @if (isLoadingMore && hasMore) {
+            <div class="tile tile--center loading-more">
+                <div class="loader loader--sm">
+                    <div class="loader__container"></div>
+                </div>
+            </div>
+        }
+
+        @if (isLoading) {
+            <div class="tile tile--center">
+                <div class="loader loader--sm">
+                    <div class="loader__container"></div>
+                </div>
+            </div>
+        }
+
+        @if (!isLoading && allPosts.length === 0) {
+            <app-not-found
+                [title]="'notFound.nothingFound' | transloco"
+                [subtitle]="''"
+            ></app-not-found>
+        }
+        <div *ngIf="!isLoading && allPosts.length > 0" class="publications">
+            <div class="publications__section">
+                <ng-container *ngFor="let group of groupedPosts">
+                    <div class="date-divider">
+                        <span class="date-divider__text">
+                            @if (group.dateLabel.startsWith('common.')) {
+                                {{ group.dateLabel | transloco }}
+                            } @else {
+                                {{ group.dateLabel }}
+                            }
+                        </span>
+                    </div>
+                    <div *ngFor="let post of group.posts" class="publication publication--chat">
+                        <div class="publication__body">
+                            <div class="publication__user-avatar">
+                                <div class="avatar">
+                                    <img [src]="'assets/img/misc/person-avatar.png'" alt=""
+                                         class="avatar__image">
+                                </div>
+                            </div>
+                            <div class="publication__message-wrapper">
+                                <div class="publication__message-details">
+                                    <div class="publication__message-username">
+                                        {{ post.username }}
+                                    </div>
+                                    <div class="publication__message-date">
+                                        {{ post.createdAt | date: 'dd.MM.yyyy HH:mm' }}
+                                    </div>
+                                </div>
+                                <div class="publication__message-box">
+                                    <!-- FILE -->
+                                    <div *ngIf="post.text" [class.with-media]="post.attachPaths.length > 0"
+                                         class="message-box">
+                                        <ng-container *ngIf="post.text | walletLink as parts">
+                                            <span>{{ parts.before | transloco }}</span>
+                                            <a (click)="navigateToCryptoWalletPage($event)"
+                                               *ngIf="parts.token"
+                                               class="link"
+                                            >
+                                                {{ parts.token }}
+                                            </a>
+                                            <span>{{ parts.after }}</span>
+                                        </ng-container>
+                                    </div>
+                                    <div
+                                        *ngIf="post.attachPaths.length > 0"
+                                        [class.without-text]="!post.text"
+                                        class="message-box message-box--attachment"
+                                    >
+                                        @if (post.attachPaths.length > 0) {
+                                            <div class="post_container">
+                                                <ng-container *ngIf="post.imgUrls">
+                                                    @for (image of post.imgUrls; track $index) {
+                                                        <img [src]="image.url" [alt]="image.url"
+                                                             class="post_image"
+                                                             (click)="$event.stopPropagation(); showMediaFullscreen(image)">
+                                                    }
+                                                </ng-container>
+                                                <ng-container *ngIf="post.videoUrls">
+                                                    @for (video of post.videoUrls; track $index) {
+                                                        <div class="video-container"
+                                                             (click)="$event.stopPropagation(); showMediaFullscreen(video)">
+                                                            <button
+                                                                type="button"
+                                                                class="button button__icon play_btn"
+                                                            >
+                                                                <svg xmlns="http://www.w3.org/2000/svg"
+                                                                     class="icon__svg" width="60" height="60"
+                                                                     viewBox="0 0 60 60">
+                                                                    <g clip-path="url(#clip0_15078_123219)">
+                                                                        <path class="path_fill"
+                                                                              d="M30 60C13.4314 60 0 46.5684 0 30C0 13.4314 13.4314 0 30 0C46.5684 0 60 13.4314 60 30C60 46.5684 46.5684 60 30 60ZM25.8657 19.2438C25.6686 19.1123 25.437 19.0422 25.2 19.0422C24.5373 19.0422 24 19.5795 24 20.2422V39.7578C24 39.9948 24.0702 40.2264 24.2016 40.4235C24.5691 40.9749 25.3143 41.124 25.8657 40.7562L40.5024 30.9984C40.6341 30.9105 40.7472 30.7974 40.8351 30.6657C41.2029 30.1143 41.0538 29.3691 40.5024 29.0016L25.8657 19.2438Z"
+                                                                              fill="white" fill-opacity="0.7"/>
+                                                                    </g>
+                                                                    <defs>
+                                                                        <clipPath id="clip0_15078_123219">
+                                                                            <rect width="60" height="60"/>
+                                                                        </clipPath>
+                                                                    </defs>
+                                                                </svg>
+                                                            </button>
+                                                            <video [id]="'video' + video.url"
+                                                                   class="post_video">
+                                                                <source [src]="video.url" [type]="video.type"/>
+                                                            </video>
+                                                        </div>
+                                                    }
+                                                </ng-container>
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </ng-container>
+            </div>
+        </div>
+    </div>
+</div>
+<app-media-view
+    (click)="$event.stopPropagation(); onMediaViewerClose($event)"
+    (closed)="onMediaViewerClose($event)"
+    *ngIf="shownMedia"
+    [media]="shownMedia"
+    id="media-overlay"
+></app-media-view>

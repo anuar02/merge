@@ -1,0 +1,142 @@
+<div class="card__avatar">
+    <div class="avatar avatar__group">
+        <div class="avatar__wrapper">
+            <img
+                class="avatar__image"
+                alt="Avatar"
+                [src]="getPhotoUrl(collection().photo)"
+                (click)="onAvatarClick()">
+            @if (platformId() > 0 && platforms().length > 0) {
+                <app-platform-icon
+                    [platform]="platformId()"
+                    [platformList]="platforms()"
+                ></app-platform-icon>
+            }
+        </div>
+    </div>
+</div>
+
+<div class="card__info">
+    <div class="card__row card__row--primary">
+        <span class="text text--md text--700">
+            {{ collection().title || collection().groupName || collection().searchValue || 'N/A' }}
+        </span>
+
+        @if (collection().username) {
+            <button class="card__link" (click)="$event.stopPropagation()">
+                {{ '@' + collection().username }}
+            </button>
+        }
+
+        @if (collection().verified) {
+            <app-badge
+                color="default"
+                [label]="'common.verified' | transloco"
+                [prefixIcon]="'icon-check'"
+            ></app-badge>
+        }
+
+        @if (collectStatus()) {
+            <app-badge
+                [iconColor]="collectStatus().color"
+                [iconSize]="'sm'"
+                [label]="collectStatus().label | transloco"
+                [prefixIcon]="'icon-dot'"
+            ></app-badge>
+        }
+        @if (collection().monitor) {
+            <app-badge
+                [iconColor]="'success'"
+                [prefixIcon]="'icon-eye'"
+                [capitalize]="false"
+            ></app-badge>
+        }
+    </div>
+
+    <div class="card__row card__row--stats">
+        @if (collection().subscriberCount) {
+            <div class="card__stat">
+                <span class="card__stat-value">{{ collection().subscriberCount }}</span>
+                <span class="card__stat-delta">+4</span>
+                <span class="card__stat-label">{{ 'accounts.participantsCount' | transloco }}</span>
+            </div>
+        }
+
+        @if (collection().groupCount) {
+            <div class="card__stat">
+                <span class="card__stat-value">{{ collection().groupCount }}</span>
+                <span class="card__stat-label">{{ 'accounts.groupCount' | transloco }}</span>
+            </div>
+        }
+
+        @if (collection().postCount) {
+            <div class="card__stat">
+                <span class="card__stat-value">{{ collection().postCount }}</span>
+                <span class="card__stat-delta">+4</span>
+                <span class="card__stat-label">{{ 'accounts.publicationCount' | transloco }}</span>
+            </div>
+        }
+
+        @if (collection().botCount) {
+            <div class="card__stat">
+                <span class="card__stat-value">{{ collection().botCount }}</span>
+                <span class="card__stat-delta">+4</span>
+                <span class="card__stat-label">{{ 'accounts.avatarCount' | transloco }}</span>
+            </div>
+        }
+    </div>
+
+    @if (tags().length > 0) {
+        <div class="card__row card__row--tags">
+            @for (tag of tags(); track $index) {
+                <app-badge
+                    color="default"
+                    [label]="tag"
+                    [capitalize]="false"
+                ></app-badge>
+            }
+        </div>
+    }
+</div>
+
+<div class="card__actions">
+    <div class="card__buttons">
+        <app-button-component
+            [uiType]="'secondary-gray'"
+            [icon]=""
+            size="lg"
+            (click)="$event.stopPropagation(); openInfoModal()"
+        >
+            <ng-container ngProjectAs="icon">
+                <svg class="icon__svg" width="20" height="20" viewBox="0 0 20 20" fill="none"
+                     xmlns="http://www.w3.org/2000/svg">
+                    <path
+                        d="M10 13.3333V10M10 6.66667H10.0083M18.3333 10C18.3333 14.6024 14.6024 18.3333 10 18.3333C5.39763 18.3333 1.66667 14.6024 1.66667 10C1.66667 5.39763 5.39763 1.66667 10 1.66667C14.6024 1.66667 18.3333 5.39763 18.3333 10Z"
+                        stroke="#667085" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </ng-container>
+        </app-button-component>
+
+        <app-actions-dropdown
+            (actionClicked)="onActionClick($event)"
+            (click)="$event.stopPropagation()"
+            *ngIf="!!dropdownActions.length"
+            [items]="dropdownActions"
+        ></app-actions-dropdown>
+    </div>
+
+    <div class="card__actions-bottom">
+        <div class="card__date-group">
+            <span class="card__date-label">{{ 'accounts.collectionDate' | transloco }}</span>
+            <span class="card__date-value">
+                {{ (collection().firstCollectedAt || collection().lastCollectedAt) | date: 'dd.MM.yyyy' }}
+            </span>
+        </div>
+        <div class="card__date-group">
+            <span class="card__date-label">{{ 'accounts.lastPostTs' | transloco }}</span>
+            <span class="card__date-value">
+                -
+            </span>
+        </div>
+    </div>
+</div>

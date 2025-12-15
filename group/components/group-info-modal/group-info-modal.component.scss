@@ -1,0 +1,346 @@
+@use '../../../../../../assets/scss/settings' as *;
+@use '../../../../../../assets/scss/util/rem-mixin' as *;
+@use '../../../../../../assets/scss/util/bem-mixin' as *;
+
+
+@include b(group-info-modal) {
+    @include e(header) {
+        display: flex;
+        flex-direction: column;
+        gap: rem($spacing-xs);
+        width: 100%;
+    }
+
+    @include e(title) {
+        font-family: 'Inter', sans-serif;
+        font-size: rem($text-lg);
+        font-weight: $text-600;
+        line-height: rem($line-height-lg);
+        color: $text-primary;
+        margin: 0;
+    }
+
+    // Content
+    @include e(content) {
+        display: flex;
+        flex-direction: column;
+        gap: rem($spacing-3xl);
+        width: 100%;
+    }
+
+    // Section
+    @include e(section) {
+        display: flex;
+        flex-direction: column;
+        gap: rem(12px);
+        width: 100%;
+
+        &:not(:last-child) {
+            margin-bottom: 0;
+        }
+    }
+
+    @include e(section-title) {
+        font-family: 'Inter', sans-serif;
+        font-size: rem($text-sm);
+        font-weight: $text-500;
+        line-height: rem($line-height-sm);
+        color: $text-primary;
+        margin: 0;
+    }
+
+    @include e(description) {
+        font-family: 'Inter', sans-serif;
+        font-size: rem($text-md);
+        font-weight: $text-400;
+        line-height: rem($line-height-md);
+        color: $gray-600;
+        margin: 0;
+    }
+
+    // Details Grid
+    @include e(details) {
+        display: flex;
+        flex-wrap: wrap;
+        gap: rem($spacing-3xl);
+        width: rem(640px);
+    }
+
+    @include e(detail-item) {
+        display: flex;
+        flex-direction: column;
+        gap: rem($spacing-md);
+        width: rem(253px);
+    }
+
+    @include e(label) {
+        font-family: 'Inter', sans-serif;
+        font-size: rem($text-sm);
+        font-weight: $text-500;
+        line-height: rem($line-height-sm);
+        color: $text-quaternary;
+        margin: 0;
+    }
+
+    @include e(value) {
+        font-family: 'Inter', sans-serif;
+        font-size: rem($text-md);
+        font-weight: $text-500;
+        line-height: rem($line-height-md);
+        color: $text-secondary;
+        margin: 0;
+        white-space: pre;
+    }
+
+    // Link Button
+    @include e(link-button) {
+        display: flex;
+        align-items: center;
+        gap: rem($spacing-md);
+        background: none;
+        border: none;
+        padding: 0;
+        cursor: pointer;
+        transition: opacity 0.2s ease;
+
+        &:hover {
+            opacity: 0.8;
+        }
+    }
+
+    @include e(link-text) {
+        font-family: 'Inter', sans-serif;
+        font-size: rem($text-md);
+        font-weight: $text-600;
+        line-height: rem($line-height-md);
+        color: $button-tertiary-color-text;
+        white-space: pre;
+    }
+
+    @include e(link-icon) {
+        width: rem(20px);
+        height: rem(20px);
+        flex-shrink: 0;
+        color: $button-tertiary-color-text;
+    }
+
+    // Badge
+    @include e(badge) {
+        display: inline-flex;
+        align-items: center;
+        padding: rem($spacing-xxs) rem($spacing-sm);
+        border-radius: rem($radius-sm);
+        font-family: 'Inter', sans-serif;
+        font-size: rem($text-xs);
+        font-weight: $text-500;
+        line-height: rem($line-height-xs);
+        text-align: center;
+        white-space: pre;
+        width: fit-content;
+
+        @include m(success) {
+            background-color: $bg-success-primary;
+            border: 1px solid $utility-success-200;
+            color: $utility-success-700;
+        }
+    }
+
+    // User Card
+    @include e(user-card) {
+        display: flex;
+        gap: rem($spacing-xl);
+        align-items: flex-start;
+        padding: rem($spacing-xl);
+        background-color: $bg-secondary;
+        border-radius: rem($radius-md);
+        width: 100%;
+    }
+
+    @include e(avatar) {
+        width: rem(48px);
+        height: rem(48px);
+        border-radius: rem($radius-full);
+        flex-shrink: 0;
+        overflow: hidden;
+        background-color: $bg-tertiary;
+        border: 0.75px solid rgba(0, 0, 0, 0.08);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+
+        img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        svg {
+            width: rem(20px);
+            height: rem(20px);
+            color: $fg-quaternary;
+        }
+    }
+
+    @include e(user-info) {
+        display: flex;
+        flex-direction: column;
+        gap: rem($spacing-md);
+        flex: 1;
+        min-width: 0;
+    }
+
+    @include e(user-name-row) {
+        display: flex;
+        align-items: center;
+        gap: rem($spacing-md);
+        white-space: pre;
+    }
+
+    @include e(user-name) {
+        font-family: 'Inter', sans-serif;
+        font-size: rem($text-md);
+        font-weight: $text-600;
+        line-height: rem($line-height-md);
+        color: $text-primary;
+    }
+
+    @include e(user-username) {
+        font-family: 'Inter', sans-serif;
+        font-size: rem($text-sm);
+        font-weight: $text-400;
+        line-height: rem($line-height-sm);
+        color: $text-secondary;
+    }
+
+    @include e(user-meta) {
+        font-family: 'Inter', sans-serif;
+        font-size: rem($text-sm);
+        font-weight: $text-400;
+        line-height: rem($line-height-sm);
+        color: $gray-600;
+        margin: 0;
+
+        span {
+            color: $text-primary;
+        }
+    }
+
+    // AI Profile Section
+    @include e(ai-section) {
+        display: flex;
+        flex-direction: column;
+        gap: rem($spacing-lg);
+        padding: rem($spacing-xl) rem($spacing-3xl);
+        background-color: $bg-secondary;
+        border-radius: rem($radius-md);
+        width: 100%;
+        flex: 1;
+        min-height: 0;
+    }
+
+    @include e(ai-header) {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+    }
+
+    @include e(ai-title) {
+        font-family: 'Inter', sans-serif;
+        font-size: rem($text-md);
+        font-weight: $text-600;
+        line-height: rem($line-height-md);
+        color: $text-primary;
+        margin: 0;
+        white-space: pre;
+    }
+
+    @include e(refresh-button) {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: rem(36px);
+        height: rem(36px);
+        padding: rem($spacing-md);
+        background-color: $button-secondary-gray-bg;
+        border: 1px solid $button-secondary-gray-border;
+        border-radius: rem($radius-md);
+        cursor: pointer;
+        transition: background-color 0.2s ease;
+
+        &:hover:not(:disabled) {
+            background-color: $button-secondary-gray-bg-hover;
+        }
+
+        &:disabled {
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+    }
+
+    @include e(refresh-icon) {
+        width: rem(20px);
+        height: rem(20px);
+        flex-shrink: 0;
+        color: $button-secondary-gray-text;
+        transition: transform 0.3s ease;
+
+        @include m(spinning) {
+            animation: spin 1s linear infinite;
+        }
+    }
+
+    @include e(ai-content) {
+        display: flex;
+        flex-direction: column;
+        gap: rem($spacing-lg);
+        padding-bottom: rem($spacing-lg);
+        overflow-x: hidden;
+        overflow-y: auto;
+        flex: 1;
+        min-height: 0;
+    }
+
+    @include e(ai-conclusion) {
+        font-family: 'Inter', sans-serif;
+        font-size: rem($text-md);
+        font-weight: $text-400;
+        line-height: rem($line-height-md);
+        color: $gray-600;
+        margin: 0;
+
+        strong {
+            font-weight: $text-700;
+            line-height: rem($line-height-md);
+        }
+    }
+
+    @include e(ai-footer) {
+        display: flex;
+        gap: rem(2px);
+        align-items: flex-start;
+        font-family: 'Inter', sans-serif;
+        font-size: rem($text-sm);
+        font-weight: $text-400;
+        line-height: rem($line-height-sm);
+        color: $gray-600;
+        margin: 0;
+        white-space: pre;
+
+        span {
+            font-weight: $text-500;
+            color: $text-primary;
+        }
+    }
+}
+
+// Keyframes for spinning animation
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}

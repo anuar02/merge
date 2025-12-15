@@ -1,0 +1,165 @@
+<div class="card__avatar" style="width: 2.5rem;">
+    <div class="avatar avatar--group">
+        <div class="avatar__wrapper">
+            <img
+                class="avatar__image"
+                [class.avatar__image--loaded]="group().photo !== 'assets/img/misc/person-avatar.png'"
+                [src]="group().photo" alt="Avatar"
+            >
+            @defer (when (typeof platformId() === 'number') && platforms().length) {
+                <app-platform-icon
+                    [platform]="platformId()"
+                    [platformList]="platforms()"
+                ></app-platform-icon>
+            }
+        </div>
+    </div>
+</div>
+<div class="card__details">
+    <div class="group">
+        @if (!!monitoringCreated && !!monitoringDisabled) {
+            @defer (when group().monitor) {
+                <app-badge
+                    [color]="'success'"
+                    [label]="'accounts.onMonitoring' | transloco"
+                    [prefixIcon]="'icon-eye'"
+                    [capitalize]="false"
+                ></app-badge>
+            }
+            @defer (when group().collectStatus) {
+                <app-badge
+                    *ngIf="collectStatus()"
+                    [color]="collectStatus().color"
+                    [label]="collectStatus().label | transloco"
+                    [capitalize]="false"
+                ></app-badge>
+            }
+        }
+    </div>
+    <div class="card__title">
+        <div class="group group--vertical group--md">
+            <ng-container *ngIf="group().username">
+                @defer (when group().username) {
+                    <div class="card__name">
+                        {{ group().username }}
+                    </div>
+                }
+            </ng-container>
+            <ng-container *ngIf="group().groupName">
+                @defer (when group().groupName) {
+                    <div class="card__name" [style.cursor]="hasClickOnGroupName ? 'pointer' : 'default'" (click)="$event.stopPropagation(); onClick()">
+                        {{ group().groupName }}
+                    </div>
+                }
+            </ng-container>
+            <div class="card__name" *ngIf="group().title">
+                {{ group().title }}
+            </div>
+            <ng-container *ngIf="group().url">
+                @defer (when group().url) {
+                    <div class="card__name">
+                        <a [href]="group().url" class="link" target="_blank">
+                            {{ group().url }}
+                            <div class="link__icon icon">
+                                <app-svg-icon icon="icon-up-right"/>
+                            </div>
+                        </a>
+                    </div>
+                }
+            </ng-container>
+            @if (!group().title && !group().url && !group().username && !group().groupName) {
+                <div class="card__name">
+                    @switch (group().searchParamType) {
+                        @case ('SCREEN_NAME') {
+                            {{ '@' + group().searchValue }}
+                        }
+                        @case ('ID') {
+                            {{ 'ID: ' + group().searchValue }}
+                        }
+                        @case ('URL') {
+                            <a [href]="group().searchValue" class="link" target="_blank">
+                                {{ group().searchValue }}
+                                <div class="link__icon icon">
+                                    <app-svg-icon icon="icon-up-right"/>
+                                </div>
+                            </a>
+                        }
+                    }
+                </div>
+            }
+        </div>
+    </div>
+    <div class="card__stats">
+        <div class="card__stats-item" *ngIf="group().subscriberCount">
+            <div class="text text--sm text--600">
+                {{ group().subscriberCount }}
+            </div>
+            <div class="text text--sm text--400 text--tetriary-600">
+                {{ ('accounts.participantsCount' | transloco).toLowerCase() }}
+            </div>
+        </div>
+        <div class="card__stats-item" *ngIf="group().postCount">
+            <div class="text text--sm text--600">
+                {{ group().postCount }}
+            </div>
+            <div class="text text--sm text--400 text--tetriary-600">
+                {{ ('accounts.publicationCount' | transloco).toLowerCase() }}
+            </div>
+        </div>
+        <!--            @defer (when group().sourceType === 'MESSENGER') {-->
+        <!--                <div class="card__stats-item">-->
+        <!--                    <div class="text text&#45;&#45;sm text&#45;&#45;600">-->
+        <!--                        0-->
+        <!--                    </div>-->
+        <!--                    <div class="text text&#45;&#45;sm text&#45;&#45;tetriary-600">-->
+        <!--                        {{ 'accounts.botsCount' | transloco }}-->
+        <!--                    </div>-->
+        <!--                </div>-->
+        <!--            }-->
+    </div>
+    <div class="card__badges">
+        @for (tag of tags(); track $index) {
+            <app-badge
+                [small]="true"
+                [label]="tag"
+            ></app-badge>
+        }
+    </div>
+</div>
+<div class="card__aside card__aside--vertical">
+    <div class="card__aside-layout m-b">
+        @if (!!monitoringDisabled && !!monitoringCreated) {
+            @if (isOnline) {
+                <button
+                    class="button button--secondary-gray"
+                    [class.button--allert]="group().monitor"
+                    (click)="$event.stopPropagation(); group().monitor ? monitoringDisabled.emit() : monitoringCreated.emit()"
+                >
+                    <div class="button__icon icon">
+                        <app-svg-icon
+                            [icon]="group().monitor ? 'icon-eye-off' : 'icon-eye'"
+                        ></app-svg-icon>
+                    </div>
+                    <div class="button__name">{{ group().monitor ? ('accounts.end' | transloco) : ('accounts.monitoring' | transloco) }}</div>
+                </button>
+            }
+        }
+    <!--    <app-button-dropdown-->
+    <!--        [items]="actions"-->
+    <!--        [icon]="'icon-dots-vertical'"-->
+    <!--        className="button&#45;&#45;secondary-gray"-->
+    <!--    ></app-button-dropdown>-->
+    </div>
+    <div class="card__aside-bottom">
+        @if (group().lastCollectedAt) {
+            <div class="group group--vertical group--xs">
+                <div class="text text--tetriary text-400">
+                    {{ 'accounts.lastCollectionDate' | transloco }}
+                </div>
+                <div class="text">
+                    {{ group().lastCollectedAt | date: 'dd.MM.yyyy HH:mm:ss' }}
+                </div>
+            </div>
+        }
+    </div>
+</div>

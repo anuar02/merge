@@ -1,0 +1,86 @@
+@if (hasSidebar()) {
+    <div class="body__sidebar">
+        <div class="sidebar">
+
+            <div class="sidebar__section">
+                <ng-content select="tree"></ng-content>
+            </div>
+
+            <div class="sidebar__section sidebar__section--expand">
+                <ng-content select="filter"></ng-content>
+            </div>
+
+        </div>
+    </div>
+}
+
+
+<div class="body__content">
+    <div
+            [class.tile--table]="dataView() === 'table'"
+            class="tile"
+            [class.tile--no-padding]="!hasPadding()"
+    >
+        <div class="tile__topbar">
+            <ng-content select="tabs">
+
+            </ng-content>
+
+            <div class="panel panel--md">
+                <div class="panel__content">
+                    <app-view-switch (changed)="onViewChange($event)" [view]="dataView()"></app-view-switch>
+                    <app-sorting
+                            (changed)="sortingHandled.emit($event)"
+                            [items]="sortingItems()"
+                            [position]="'right'"
+                            [sort]="queryParams().sort"
+                    ></app-sorting>
+                    <app-search-bar (searched)="this.searchHandled.emit($event.search)"></app-search-bar>
+                </div>
+                <div class="panel__aside">
+                    <ng-content select="actions"></ng-content>
+                </div>
+            </div>
+        </div>
+        <div class="tile__body">
+            @if (isLoading()) {
+                <div class="tile tile--center">
+                    <div class="loader loader--sm">
+                        <div class="loader__container"></div>
+                    </div>
+                </div>
+            }
+
+            @if (!isLoading() && data().length === 0) {
+                <app-not-found
+                        [title]="'notFound.nothingFound' | transloco"
+                        [subtitle]="''"
+                ></app-not-found>
+            }
+
+            @if (dataView() === 'table') {
+                <ng-content select="table"></ng-content>
+            }
+
+            @if (dataView() === 'list') {
+                <div class="virtual-scroll">
+                    <div class="group group--xl group--vertical">
+                        <ng-content select="list"></ng-content>
+                    </div>
+                </div>
+            }
+        </div>
+        @if (totalElements() > 0) {
+            <div class="tile__pagination">
+                <app-pagination-panel
+                        [selectPanelPosition]="'up'"
+                        [totalElements]="totalElements()"
+                        [totalPages]="totalPages()"
+                        [pageParams]="pageParams()"
+                        (pageChanged)="handleChangePage($event)"
+                        (itemsPerPageChanged)="handleItemsPerPageChange($event)"
+                ></app-pagination-panel>
+            </div>
+        }
+    </div>
+</div>

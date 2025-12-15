@@ -1,0 +1,74 @@
+<app-modal-wrap
+    [footer]="{ confirmButtonName: 'button.start', cancelButtonName: 'button.cancel' }"
+    [size]="'collection-monitoring-modal'"
+    (closeModal)="onCancel()"
+    (cancelEvent)="onCancel()"
+    (confirmEvent)="onConfirm()"
+>
+    <div modal-header>
+        <div class="modal__title">
+            {{ getModalTitle() | transloco }}
+        </div>
+    </div>
+    <div modal-body>
+        <form class="group group--vertical group--2xl" [formGroup]="form">
+            @if (mode!=='collection') {
+                <div class="group">
+                    <div class="group__item">
+                        <app-custom-datepicker
+                            [mode]="'range'"
+                            [showTime]="true"
+                            [minDate]="today"
+                            [dateFormat]="'DD.MM.YYYY'"
+                            [formControl]="regularPeriod"
+                            [placeholder]="'common.choosePeriod' | transloco"
+                        ></app-custom-datepicker>
+                        @if (regularPeriod.invalid && regularPeriod.touched) {
+                            <div class="text text--sm text--error">
+                                @if (regularPeriod.hasError('required')) {
+                                    <ng-container>
+                                        {{ 'common.fieldRequired' | transloco }}
+                                    </ng-container>
+                                }
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+
+            <div class="group">
+                <div class="group__item">
+                    <div class="m-b">
+                        <div class="text text-500">
+                            {{ 'accounts.collectedData' | transloco }}
+                            <mark>*</mark>
+                        </div>
+                    </div>
+                    <div class="group group--vertical">
+                        @for (section of availableSections; track section.value) {
+                            <div class="checkbox">
+                                <input
+                                    class="checkbox__control"
+                                    type="checkbox"
+                                    [name]="section.value"
+                                    [id]="section.value"
+                                    [value]="section.value"
+                                    [checked]="isSectionChecked(section.value)"
+                                    (change)="onCollectedSectionsCheckboxChanged($event)"
+                                >
+                                <label class="checkbox__label" [for]="section.value">
+                                    {{ section.label | transloco }}
+                                </label>
+                            </div>
+                        }
+                    </div>
+                    @if (collectedSections.invalid && collectedSections.touched) {
+                        <div class="text text--sm text--error">
+                            {{ 'common.selectAtLeastOne' | transloco }}
+                        </div>
+                    }
+                </div>
+            </div>
+        </form>
+    </div>
+</app-modal-wrap>

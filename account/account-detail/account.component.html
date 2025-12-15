@@ -1,0 +1,32 @@
+<div class="body__container">
+    <div class="body__content">
+        <div class="body__wrapper account__wrapper">
+            <div class="grid__header">
+                <app-collection-card
+                    class="card--light body__collection-card"
+                    [collection]="generalInfo()"
+                    [platforms]="allowedPlatforms()"
+                    (refetchData)="updateGeneralInfo()"
+                ></app-collection-card>
+            </div>
+
+            <div class="custom-tabs">
+                <div class="custom-tabs__header tab">
+                    @for (tab of tabs; track tab.route) {
+                        <div
+                            [routerLink]="tab.route"
+                            routerLinkActive="tab__item--active"
+                            class="tab__item"
+                        >
+                            {{ tab.label | transloco }}
+                        </div>
+                    }
+                </div>
+
+                <div class="custom-tabs__content">
+                    <router-outlet></router-outlet>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,24 @@
+<div class="body__container">
+    <div class="body__content">
+        <div class="body__wrapper">
+            <div class="grid__header">
+                <app-collection-card
+                    class="card--light body__collection-card"
+                    [collection]="generalInfo()"
+                    [platforms]="allowedPlatforms()"
+                    (refetchData)="updateGeneralInfo()"
+                ></app-collection-card>
+            </div>
+
+            <div class="group-content-wrapper__container">
+                <div class="group-content-wrapper__section group-content-wrapper__section--members">
+                    <app-members [groupId]="generalInfo().id"></app-members>
+                </div>
+
+                <div class="group-content-wrapper__section group-content-wrapper__section--publications">
+                    <app-publications [groupId]="generalInfo().id" style="height: 100%;"></app-publications>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

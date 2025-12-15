@@ -1,0 +1,122 @@
+<app-modal-wrap
+    [modalTitle]="'bots.addSession' | transloco"
+    [size]="'trap'"
+    (closeModal)="closeBtn()"
+>
+    <div modal-body>
+        @if (mode() === 'phoneNumber') {
+            <!-- @if (isSmsCodeInfoVisible) { -->
+                <div class="note note--primary note--info">
+                    <div class="note__icon icon">
+                        <app-svg-icon icon="icon-info-circle"></app-svg-icon>
+                    </div>
+                    {{ 'bots.smsCodeInfo' | transloco }}
+                </div>
+                <div class="spacing spacing--md"></div>
+            <!-- } -->
+
+            <app-otp-input
+                [label]="'bots.smsCode' | transloco"
+                [formControl]="code"
+                [isError]="isOtpError"
+                [size]="5"
+                (codeRefreshActivated)="handleCodeRefresh()"
+            >
+            </app-otp-input>
+
+            <div class="spacing spacing--xl"></div>
+
+            <div class="input">
+                <div class="input__label">
+                    {{ 'bots.authCode' | transloco }}:
+                </div>
+                <div
+                    class="input__container"
+                    [class.input__container--error]="twoFactorPassword.invalid && twoFactorPassword.touched"
+                >
+                    <input
+                        type="text"
+                        class="input__control"
+                        [placeholder]="'bots.codePlaceholder' | transloco"
+                        [formControl]="twoFactorPassword"
+                    >
+                </div>
+            </div>
+
+            <div class="spacing spacing--2xl"></div>
+
+            <div class="group group--vertical group--2xl">
+                <button class="button button--link-color" (click)="changeMode('qr')">
+                    <div class="button__name">{{ 'bots.loginByQr' | transloco }}</div>
+                </button>
+            </div>
+
+            <div class="spacing spacing--4xl"></div>
+        }
+
+        @if (mode() === 'qr') {
+            <div class="group group--vertical group--middle">
+                @if (!imagePath) {
+                    <app-loader></app-loader>
+                } @else {
+                    <div class="qr-wrapper">
+                        <img [src]="imagePath" alt="QR" class="qr-code-image" [class.qr-status-ok]="isQrCorrect()"/>
+
+                        @if (isQrCorrect()) {
+                            <div class="qr-center-icon">
+                                <img src="assets/img/check-circle.png" alt="">
+                            </div>
+                        }
+                    </div>
+
+                    @if (!isQrCorrect()) {
+                        <div class="text text--400 text--tetriary">{{ 'bots.scanQr' | transloco }}</div>
+                        <div class="spacing spacing--xs"></div>
+                    }
+                }
+
+                @if (twoFactorAuth()) {
+                    <div class="input">
+                        <div class="input__label">
+                            {{ 'bots.authCode' | transloco }}:
+                        </div>
+                        <div
+                            class="input__container"
+                            [class.input__container--error]="twoFactorPassword.invalid && twoFactorPassword.touched"
+                        >
+                            <input
+                                type="text"
+                                class="input__control"
+                                [placeholder]="'bots.codePlaceholder' | transloco"
+                                [formControl]="twoFactorPassword"
+                            >
+                        </div>
+                    </div>
+                    <div class="spacing spacing--xs"></div>
+                }
+
+                <button class="button button--link-color" (click)="changeMode('phoneNumber')">
+                    <div class="button__name">{{ 'bots.loginByPhoneNumber' | transloco }}</div>
+                </button>
+                <div class="spacing spacing--4xl"></div>
+            </div>
+        }
+    </div>
+    <div modal-footer>
+        <div class="panel">
+            <div class="panel__aside">
+                @if (mode() === 'qr') {
+                    <button class="button button--lg button--expand button--secondary-gray" (click)="cancel()">
+                        <div class="button__name">{{ 'button.cancel' | transloco }}</div>
+                    </button>
+                }
+
+                @if (mode() === 'phoneNumber' || (this.mode() === 'qr' && this.twoFactorAuth())) {
+                    <button class="button button--lg button--expand" (click)="confirm()">
+                        <div class="button__name">{{ 'button.confirm' | transloco }}</div>
+                    </button>
+                }
+            </div>
+        </div>
+    </div>
+</app-modal-wrap>

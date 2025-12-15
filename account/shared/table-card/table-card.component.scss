@@ -1,0 +1,18 @@
+@use '../../../../../../assets/scss/settings' as *;
+@use '../../../../../../assets/scss/util/rem-mixin' as *;
+
+.card__details {
+    row-gap: 0;
+}
+
+.count {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: rem(12px);
+    padding: rem(12px);
+    width: 100%;
+    height: rem(18px);
+    border: 1px solid #E4E7EC;
+    background: #F9FAFB;
+}

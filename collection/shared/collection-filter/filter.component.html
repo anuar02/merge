@@ -1,0 +1,315 @@
+<div class="filter-container h--full">
+    <div class="tile filter-container">
+        <div class="tile__header">
+            <div class="tile__title">{{ getFilterTitle() | transloco }}</div>
+        </div>
+        <div class="tile__body">
+            <div class="filter" [formGroup]="formGroup()">
+                <div class="filter__body">
+                    @for (section of filterConfig().sections; track trackByIndex($index)) {
+                        <div class="filter__section">
+                            @if (section.subsections && section.subsections.length > 0) {
+                                <!-- Section with subsections - Level 0 (no checkbox) -->
+                                <app-accordion
+                                    [name]="section.title | transloco"
+                                    [accordionIsActive]="true"
+                                    [headerNoPadding]="false"
+                                    [className]="'accordion--level-0'"
+                                >
+                                    <ng-container items-postfix>
+                                        @for (subsection of section.subsections; track trackByIndex($index)) {
+                                            @if (subsection.fields && subsection.fields.length > 0) {
+                                                @if (subsection.hasCheckbox) {
+                                                    <!-- Subsection with checkbox - Level 1 -->
+                                                    <app-accordion
+                                                        [accordionIsActive]="true"
+                                                        [headerNoPadding]="false"
+                                                        [hasCustomHeader]="true"
+                                                        class="accordion__header--level-1"
+                                                    >
+                                                        <ng-container #accordionHeader>
+                                                            <div class="checkbox checkbox--header accordion__header--level-1">
+                                                                <input
+                                                                    class="checkbox__control"
+                                                                    type="checkbox"
+                                                                    [id]="'subsection_' + subsection.title"
+                                                                    [checked]="isSubsectionChecked(section, subsection)"
+                                                                    (change)="onSubsectionCheckboxChanged(section, subsection, $event)"
+                                                                    (click)="$event.stopPropagation()"
+                                                                >
+                                                                <label class="checkbox__label" [for]="'subsection_' + subsection.title" (click)="$event.stopPropagation()"></label>
+                                                            </div>
+                                                            <div class="accordion__name" style="column-gap: 0">{{ subsection.title | transloco }}</div>
+                                                        </ng-container>
+
+                                                        <ng-container items-postfix>
+                                                            @for (field of subsection.fields; track trackByKey($index, field)) {
+                                                                @if (field.type === 'checkboxList' && field.options) {
+                                                                    <div class="group group--vertical group--md">
+                                                                        @for (option of field.options; track trackByKey($index, option)) {
+                                                                            <div class="panel">
+                                                                                <div class="panel__content">
+                                                                                    <div class="checkbox">
+                                                                                        <input
+                                                                                            class="checkbox__control"
+                                                                                            type="checkbox"
+                                                                                            [name]="option.value"
+                                                                                            [id]="field.key + '_' + option.value"
+                                                                                            [checked]="isCheckboxChecked(field, option.value)"
+                                                                                            (change)="onCheckboxChanged(field, option.value, $event)"
+                                                                                        >
+                                                                                        <label class="checkbox__label" [for]="field.key + '_' + option.value">
+                                                                                            {{ option.label | transloco }}
+                                                                                        </label>
+                                                                                    </div>
+                                                                                </div>
+                                                                                @if (option.count !== undefined) {
+                                                                                    <div class="panel__aside">
+                                                                                        <div class="text text--sm">
+                                                                                            {{ option.count }}
+                                                                                        </div>
+                                                                                    </div>
+                                                                                }
+                                                                            </div>
+                                                                        }
+                                                                    </div>
+                                                                }
+                                                            }
+                                                        </ng-container>
+                                                    </app-accordion>
+                                                } @else {
+                                                    <!-- Subsection without checkbox -->
+                                                    <app-accordion
+                                                        [name]="subsection.title | transloco"
+                                                        [accordionIsActive]="true"
+                                                        [headerNoPadding]="false"
+                                                        [className]="'accordion--level-1'"
+                                                    >
+                                                        <ng-container items-postfix>
+                                                            @for (field of subsection.fields; track trackByKey($index, field)) {
+                                                                @if (field.type === 'checkboxList' && field.options) {
+                                                                    <div class="group group--vertical group--md">
+                                                                        @for (option of field.options; track trackByKey($index, option)) {
+                                                                            <div class="panel">
+                                                                                <div class="panel__content">
+                                                                                    <div class="checkbox">
+                                                                                        <input
+                                                                                            class="checkbox__control"
+                                                                                            type="checkbox"
+                                                                                            [name]="option.value"
+                                                                                            [id]="field.key + '_' + option.value"
+                                                                                            [checked]="isCheckboxChecked(field, option.value)"
+                                                                                            (change)="onCheckboxChanged(field, option.value, $event)"
+                                                                                        >
+                                                                                        <label class="checkbox__label" [for]="field.key + '_' + option.value">
+                                                                                            {{ option.label | transloco }}
+                                                                                        </label>
+                                                                                    </div>
+                                                                                </div>
+                                                                                @if (option.count !== undefined) {
+                                                                                    <div class="panel__aside">
+                                                                                        <div class="text text--sm">
+                                                                                            {{ option.count }}
+                                                                                        </div>
+                                                                                    </div>
+                                                                                }
+                                                                            </div>
+                                                                        }
+                                                                    </div>
+                                                                }
+                                                            }
+                                                        </ng-container>
+                                                    </app-accordion>
+                                                }
+                                            } @else {
+                                                <!-- Subsection without fields (Tags) - just checkbox -->
+                                                <div class="group group--vertical group--md">
+                                                    <div class="panel">
+                                                        <div class="panel__content">
+                                                            <div class="checkbox">
+                                                                <input
+                                                                    class="checkbox__control"
+                                                                    type="checkbox"
+                                                                    [id]="'subsection_tag_' + subsection.title"
+                                                                    [checked]="isSubsectionTagChecked(section, subsection)"
+                                                                    (change)="onSubsectionTagCheckboxChanged(section, subsection, $event)"
+                                                                >
+                                                                <label class="checkbox__label" [for]="'subsection_tag_' + subsection.title">
+                                                                    {{ subsection.title | transloco }}
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            }
+                                        }
+                                    </ng-container>
+                                </app-accordion>
+                            } @else if (section.fields && section.fields.length > 0) {
+                                <!-- Section with fields but no subsections -->
+                                @if (section.hasCheckbox) {
+                                    <!-- Section with checkbox -->
+                                    <app-accordion
+                                        [accordionIsActive]="true"
+                                        [headerNoPadding]="false"
+                                        [hasCustomHeader]="true"
+                                        [className]="'accordion--level-1'"
+                                    >
+                                        <ng-container #accordionHeader>
+                                            <div class="checkbox checkbox--header">
+                                                <input
+                                                    class="checkbox__control"
+                                                    type="checkbox"
+                                                    [id]="'section_' + section.title"
+                                                    [checked]="isSectionChecked(section)"
+                                                    (change)="onSectionCheckboxChanged(section, $event)"
+                                                    (click)="$event.stopPropagation()"
+                                                >
+                                                <label class="checkbox__label" [for]="'section_' + section.title" (click)="$event.stopPropagation()"></label>
+                                            </div>
+                                            <div class="accordion__name" style="column-gap: 0">{{ section.title | transloco }}</div>
+                                        </ng-container>
+
+                                        <ng-container items-postfix>
+                                            @for (field of section.fields; track trackByKey($index, field)) {
+                                                @switch (field.type) {
+                                                    @case ('checkboxList') {
+                                                        @if (field.options) {
+                                                            <div class="group group--vertical group--md">
+                                                                @for (option of field.options; track trackByKey($index, option)) {
+                                                                    <div class="panel">
+                                                                        <div class="panel__content">
+                                                                            <div class="checkbox">
+                                                                                <input
+                                                                                    class="checkbox__control"
+                                                                                    type="checkbox"
+                                                                                    [name]="option.value"
+                                                                                    [id]="field.key + '_' + option.value"
+                                                                                    [checked]="isCheckboxChecked(field, option.value)"
+                                                                                    (change)="onCheckboxChanged(field, option.value, $event)"
+                                                                                >
+                                                                                <label class="checkbox__label" [for]="field.key + '_' + option.value">
+                                                                                    {{ option.label | transloco }}
+                                                                                </label>
+                                                                            </div>
+                                                                        </div>
+                                                                        @if (option.count !== undefined) {
+                                                                            <div class="panel__aside">
+                                                                                <div class="text text--sm">
+                                                                                    {{ option.count }}
+                                                                                </div>
+                                                                            </div>
+                                                                        }
+                                                                    </div>
+                                                                }
+                                                            </div>
+                                                        }
+                                                    }
+                                                    @case ('dateRange') {
+                                                        <app-custom-datepicker
+                                                            [mode]="'range'"
+                                                            [showTime]="false"
+                                                            [dateFormat]="'DD.MM.YYYY'"
+                                                            [formControl]="$any(formGroup().get(field.key))"
+                                                            [placeholder]="field.placeholder ? (field.placeholder | transloco) : ('common.choosePeriod' | transloco)"
+                                                        ></app-custom-datepicker>
+                                                    }
+                                                    @case ('numberRange') {
+                                                        <app-range-slider
+                                                            [formControlItem]="$any(formGroup().get(field.key))"
+                                                            [min]="field.min?.toString() || '0'"
+                                                            [max]="field.max?.toString() || '100'"
+                                                            class="w--full"
+                                                        ></app-range-slider>
+                                                    }
+                                                }
+                                            }
+                                        </ng-container>
+                                    </app-accordion>
+                                } @else {
+                                    <!-- Section without checkbox -->
+                                    <app-accordion
+                                        [name]="section.title | transloco"
+                                        [accordionIsActive]="true"
+                                        [headerNoPadding]="false"
+                                        [className]="'accordion--level-0'"
+                                    >
+                                        <ng-container items-postfix>
+                                            @for (field of section.fields; track trackByKey($index, field)) {
+                                                @switch (field.type) {
+                                                    @case ('checkboxList') {
+                                                        @if (field.options) {
+                                                            <div class="group group--vertical group--md">
+                                                                @for (option of field.options; track trackByKey($index, option)) {
+                                                                    <div class="panel">
+                                                                        <div class="panel__content">
+                                                                            <div class="checkbox">
+                                                                                <input
+                                                                                    class="checkbox__control"
+                                                                                    type="checkbox"
+                                                                                    [name]="option.value"
+                                                                                    [id]="field.key + '_' + option.value"
+                                                                                    [checked]="isCheckboxChecked(field, option.value)"
+                                                                                    (change)="onCheckboxChanged(field, option.value, $event)"
+                                                                                >
+                                                                                <label class="checkbox__label" [for]="field.key + '_' + option.value">
+                                                                                    {{ option.label | transloco }}
+                                                                                </label>
+                                                                            </div>
+                                                                        </div>
+                                                                        @if (option.count !== undefined) {
+                                                                            <div class="panel__aside">
+                                                                                <div class="text text--sm">
+                                                                                    {{ option.count }}
+                                                                                </div>
+                                                                            </div>
+                                                                        }
+                                                                    </div>
+                                                                }
+                                                            </div>
+                                                        }
+                                                    }
+                                                    @case ('dateRange') {
+                                                        <app-custom-datepicker
+                                                            [mode]="'range'"
+                                                            [showTime]="false"
+                                                            [dateFormat]="'DD.MM.YYYY'"
+                                                            [formControl]="$any(formGroup().get(field.key))"
+                                                            [placeholder]="field.placeholder ? (field.placeholder | transloco) : ('common.choosePeriod' | transloco)"
+                                                        ></app-custom-datepicker>
+                                                    }
+                                                    @case ('numberRange') {
+                                                        <app-range-slider
+                                                            [formControlItem]="$any(formGroup().get(field.key))"
+                                                            [min]="field.min?.toString() || '0'"
+                                                            [max]="field.max?.toString() || '100'"
+                                                            class="w--full"
+                                                        ></app-range-slider>
+                                                    }
+                                                }
+                                            }
+                                        </ng-container>
+                                    </app-accordion>
+                                }
+                            }
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+        <div class="tile__footer">
+            <div class="group group--auto-layout">
+                <button class="button button--secondary button--expand" (click)="resetFilter()">
+                    <div class="button__name">
+                        {{ 'button.reset' | transloco }}
+                    </div>
+                </button>
+                <button class="button button--expand" (click)="applyFilter()">
+                    <div class="button__name">
+                        {{ 'button.apply' | transloco }}
+                    </div>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
